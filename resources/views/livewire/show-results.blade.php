@@ -10,7 +10,7 @@
         init() {
             const ctx = this.$refs.canvas;
 
-            new Chart(ctx, {
+            let chart = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: this.voteTexts,
@@ -69,13 +69,13 @@
                     indexAxis: 'y',
                 }
             });
-           
             Livewire.on('chart-refreshed', () => {
-                ctx.data.labels = this.voteTexts;
-                ctx.data.datasets[0] = this.voteResults;
-                ctx.update();
+                chart.data.labels = this.voteTexts;
+                chart.data.datasets[0].data = this.voteResults;
+                chart.update();
             });
         }
+
     }"
 
 >
