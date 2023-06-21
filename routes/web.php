@@ -25,14 +25,13 @@ Route::middleware([
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
-});
-
-Route::get('/questions', function () {
+    Route::get('/questions', function () {
         return view('list-all-questions');
-})->name('questions');
+    })->name('questions');
 
-Route::get('/questions/{question_id}/votes', function ($question_id) {
-    return view('list-results', [
-        'question_id' => $question_id,
-    ]);
-})->name('results');
+    Route::get('/questions/{question_id}/votes', function ($question_id) {
+        return view('list-results', [
+            'question_id' => $question_id,
+        ]);
+    })->name('results');
+});

@@ -29,13 +29,6 @@
                     },
                     scales: {
                         x: {
-                            ticks: {
-                                callback: function(value, index, ticks_array) {
-                                    let characterLimit = 5;
-                                    let label = this.getLabelForValue(value);
-                                    return label.substring(0, characterLimit) + '...';
-                                }
-                            },
                             grid: {
                                 display: false // Remove x-axis grid
                             },
@@ -46,6 +39,14 @@
                             },
                         },
                         y: {
+                            ticks: {
+                                callback: function(value, index, values) {
+                                    labelValue = this.getLabelForValue(value);
+                                    return labelValue.length > 15
+                                        ? labelValue.substr(0, 15) + '...'
+                                        : labelValue;
+                                }
+                            },
                             grid: {
                                 display: false // Remove y-axis grid,
                             },
@@ -84,7 +85,7 @@
         <p class="text-lg text-center font-medium text-red-500">{{ $error_message }}</p>
     @else
         <x-button wire:click="$emit('refresh-chart')">Refresh chart</x-button>
-        <x-button onclick="requestPermission()">Request permission</x-button>
+        <x-button onclick="requestPermission()">Subscribe</x-button>
         <canvas class="pt-10 mx-40" id="resultsChart" x-ref="canvas"></canvas>
         <x-section-border />
         <div class="mx-40 pb-10">
