@@ -73,6 +73,7 @@
             Livewire.on('chart-refreshed', () => {
                 chart.data.labels = this.voteTexts;
                 chart.data.datasets[0].data = this.voteResults;
+                chart.options.plugins.title.text = `${this.questionText}` + ' (' + this.voteResults.reduce((a, b) => a +b) + ')';
                 chart.update();
             });
         }
@@ -166,7 +167,6 @@
             function sendTokenToServer(currentToken) {
                 if (!isTokenSentToServer()) {
                     console.log('Sending token to server...');
-                    // TODO(developer): Send the current token to your server.
                     const data = {
                         token: currentToken
                     };
@@ -253,7 +253,6 @@
                 //
             }
 
-            // resetUI();
         </script>
     @endpush
 </div>
