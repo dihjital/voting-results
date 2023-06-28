@@ -56,7 +56,7 @@
                     plugins: {
                         title: {
                             display: true,
-                            text: `${this.questionText}` + ' (' + this.voteResults.reduce((a, b) => a +b) + ')',
+                            text: `${this.questionText}` + ' (' + this.voteResults.reduce((a, b) => a + b) + ')',
                             position: 'top',
                             font: {
                                 weight: 'bold',
@@ -73,7 +73,7 @@
             Livewire.on('chart-refreshed', () => {
                 chart.data.labels = this.voteTexts;
                 chart.data.datasets[0].data = this.voteResults;
-                chart.options.plugins.title.text = `${this.questionText}` + ' (' + this.voteResults.reduce((a, b) => a +b) + ')';
+                chart.options.plugins.title.text = `${this.questionText}` + ' (' + this.voteResults.reduce((a, b) => a + b) + ')';
                 chart.update();
             });
         }
@@ -101,7 +101,9 @@
                     <x-table.row wire:loading.class.delay="opacity-75" wire:key="row-{{ $v['id'] }}">
                         <x-table.cell>{{ $v['id'] }}</x-table.cell>
                         <x-table.cell>{{ $v['vote_text'] }}</x-table.cell>
-                        <x-table.cell>{{ $v['number_of_votes'] }}</x-table.cell>
+                        <x-table.cell>
+                            <span x-text="voteResults[{{ $loop->index }}]"></span>
+                        </x-table.cell>
                     </x-table.row>
                     @empty
                     <x-table.row wire:key="row-empty">

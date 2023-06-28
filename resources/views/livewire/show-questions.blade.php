@@ -8,7 +8,7 @@
             <x-table.heading class="w-2/12">{{ __('Question number') }}</x-table.heading>
             <x-table.heading class="w-6/12">{{ __('Question text') }}</x-table.heading>
             <x-table.heading class="w-2/12">{{ __('Number of voting options') }}</x-table.heading>
-            <x-table.heading class="w-2/12"></x-table.heading>
+            <x-table.heading class="w-2/12">{{ __('Last voting happened at') }}</x-table.heading>
         </x-slot>
         <x-slot name="body">
             @forelse($questions as $q)
@@ -20,13 +20,14 @@
                     </a>
                 </x-table.cell>
                 <x-table.cell>{{ $q['number_of_votes'] }}</x-table.cell>
-                <x-table.cell class="text-right text-sm font-medium space-x-2">
-                    <button type="button" wire:click="" class="px-3 py-3 bg-blue-500 hover:bg-blue-600 text-white text-xs rounded-md">
-                        <i class="fas fa-edit fa-sm" aria-hidden="true" title="{{ __('Update') }}"></i>
-                    </button>
-                    <button type="button" wire:click="" class="px-3 py-3 bg-red-500 hover:bg-red-600 text-white text-xs rounded-md">
-                        <i class="fas fa-trash fa-sm" aria-hidden="true" title="{{ __('Delete') }}"></i>
-                    </button>
+                <x-table.cell class="text-sm font-medium space-x-2">
+                    @php
+                        $carbonDate = $q['last_updated_at_vote']
+                            ? \Carbon\Carbon::parse($q['last_updated_at_vote'])
+                            : null; 
+                        $humanReadable = $carbonDate?->diffForHumans();
+                    @endphp
+                    {{ $humanReadable ?? __('Never') }}
                 </x-table.cell>
             </x-table.row>
             @empty
