@@ -6,6 +6,7 @@
         voteTexts: @entangle('vote_texts'),
         voteResults: @entangle('vote_results'),
         questionText: @entangle('question_text'),
+        showSubscriptionModal: @entangle('showSubscriptionModal'),
 
         init() {
             const ctx = this.$refs.canvas;
@@ -70,11 +71,25 @@
                     indexAxis: 'y',
                 }
             });
+            confirmSubscription = () => {
+                requestPermission();
+                console.log('Closing Subscription modal.');
+                this.showSubscriptionModal = ! this.showSubscriptionModal;
+            };
+            getSubscriptionStatus = () => {
+                return isTokenSentToServer() ? '{{ __('Subscribed') }}' : '{{ __('Subscribe') }}';
+            };
+            isSubscribed = () => {
+                return isTokenSentToServer();
+            }
             Livewire.on('chart-refreshed', () => {
                 chart.data.labels = this.voteTexts;
                 chart.data.datasets[0].data = this.voteResults;
                 chart.options.plugins.title.text = `${this.questionText}` + ' (' + this.voteResults.reduce((a, b) => a + b) + ')';
                 chart.update();
+            });
+            Livewire.on('request-permission', () => {
+                confirmSubscription();
             });
         }
 
@@ -85,8 +100,14 @@
     @if($error_message)
         <p class="text-lg text-center font-medium text-red-500">{{ $error_message }}</p>
     @else
-        <x-button wire:click="$emit('refresh-chart')">Refresh chart</x-button>
-        <x-button onclick="requestPermission()">Subscribe</x-button>
+        <div class="flex items-center">
+            <x-button x-bind:disabled="isSubscribed()" wire:click="$toggle('showSubscriptionModal')">
+                <span x-text="getSubscriptionStatus()"></span>
+            </x-button>
+            <x-action-message class="ml-3" on="subscribed">
+                {{ __('Subscribed.') }}
+            </x-action-message>
+        </div>
         <canvas class="pt-10 mx-40" id="resultsChart" x-ref="canvas"></canvas>
         <x-section-border />
         <div class="mx-40 pb-10">
@@ -118,6 +139,29 @@
             </x-table>
         </div>
     @endif
+
+    <!-- Show Subscription Modal -->
+    <x-dialog-modal wire:model="showSubscriptionModal">
+        <x-slot name="title">
+            {{ __('Subscribe for push notifications') }}
+        </x-slot>
+
+        <x-slot name="content">
+            <p>{{ __('By pressing the Subscribe button you consent to receive push notification when a change happens in the current voting.') }}</p>
+            <p class="mt-1">{{ __('Are you sure you would like to subscribe for push notifications?') }}</p>
+        </x-slot>
+
+        <x-slot name="footer">
+            <x-secondary-button wire:click="$toggle('showSubscriptionModal')" wire:loading.attr="disabled">
+                {{ __('Cancel') }}
+            </x-secondary-button>
+
+            <x-danger-button class="ml-3" wire:click="requestPermission" wire:loading.attr="disabled">
+                {{ __('Subscribe') }}
+            </x-danger-button>
+        </x-slot>
+    </x-dialog-modal>
+
     @push('scripts')
         <script> 
             // Your web app's Firebase configuration

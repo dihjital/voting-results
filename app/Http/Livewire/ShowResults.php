@@ -17,6 +17,8 @@ class ShowResults extends Component
 
     public $error_message;
 
+    public $showSubscriptionModal = false;
+
     protected $listeners = ['refresh-chart' => 'refreshChart'];
 
     const URL = 'http://localhost:8000';
@@ -34,6 +36,12 @@ class ShowResults extends Component
         }
         $this->question_text = $response['question_text'];
         $this->fetchData();
+    }
+
+    public function requestPermission()
+    {
+        $this->emit('request-permission');
+        $this->emit('subscribed');
     }
 
     public function refreshChart()
