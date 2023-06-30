@@ -18,8 +18,12 @@ class ShowResults extends Component
     public $error_message;
 
     public $showSubscriptionModal = false;
+    public $showUnsubscriptionModal = false;
 
-    protected $listeners = ['refresh-chart' => 'refreshChart'];
+    protected $listeners = [
+        'refresh-chart' => 'refreshChart',
+        'refresh-page'  => '$refresh',
+    ];
 
     const URL = 'http://localhost:8000';
 
@@ -41,7 +45,13 @@ class ShowResults extends Component
     public function requestPermission()
     {
         $this->emit('request-permission');
-        $this->emit('subscribed');
+        $this->emit('subscribed'); // Show action message
+    }
+
+    public function unsubscribe()
+    {
+        $this->emit('unsubscribe');
+        $this->emit('unsubscribed'); // Show action message        
     }
 
     public function refreshChart()

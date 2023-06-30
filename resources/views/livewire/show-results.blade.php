@@ -7,6 +7,7 @@
         voteResults: @entangle('vote_results'),
         questionText: @entangle('question_text'),
         showSubscriptionModal: @entangle('showSubscriptionModal'),
+        showUnsubscriptionModal: @entangle('showUnsubscriptionModal'),
 
         init() {
             const ctx = this.$refs.canvas;
@@ -91,6 +92,12 @@
             Livewire.on('request-permission', () => {
                 confirmSubscription();
             });
+            Livewire.on('unsubscribe', () => {
+                deleteToken();
+                console.log('Closing Unsubscription modal.');
+                this.showUnsubscriptionModal = ! this.showUnsubscriptionModal;
+                // Livewire.emit('refresh-page');
+            });
         }
 
     }"
@@ -101,11 +108,17 @@
         <p class="text-lg text-center font-medium text-red-500">{{ $error_message }}</p>
     @else
         <div class="flex items-center">
-            <x-button x-bind:disabled="isSubscribed()" wire:click="$toggle('showSubscriptionModal')">
-                <span x-text="getSubscriptionStatus()"></span>
+            <x-button x-show="!isSubscribed()" wire:click="$toggle('showSubscriptionModal')">
+                <span>{{ __('Subscribe') }}</span>
             </x-button>
             <x-action-message class="ml-3" on="subscribed">
                 {{ __('Subscribed.') }}
+            </x-action-message>
+            <x-button x-show="isSubscribed()" class="ml-3" wire:click="$toggle('showUnsubscriptionModal')">
+                <span>{{ __('Unsubscribe') }}</span>
+            </x-button>
+            <x-action-message class="ml-3" on="unsubscribed">
+                {{ __('Unsubscribed.') }}
             </x-action-message>
         </div>
         <canvas class="pt-10 mx-40" id="resultsChart" x-ref="canvas"></canvas>
@@ -140,7 +153,7 @@
         </div>
     @endif
 
-    <!-- Show Subscription Modal -->
+    <!-- Subscription Modal -->
     <x-dialog-modal wire:model="showSubscriptionModal">
         <x-slot name="title">
             {{ __('Subscribe for push notifications') }}
@@ -158,6 +171,28 @@
 
             <x-danger-button class="ml-3" wire:click="requestPermission" wire:loading.attr="disabled">
                 {{ __('Subscribe') }}
+            </x-danger-button>
+        </x-slot>
+    </x-dialog-modal>
+
+    <!-- Unsubscribe Modal -->
+    <x-dialog-modal wire:model="showUnsubscriptionModal">
+        <x-slot name="title">
+            {{ __('Unsubscribe from push notifications') }}
+        </x-slot>
+
+        <x-slot name="content">
+            <p>{{ __('By clicking the Unsubscribe button, you will stop receiving push notifications when the voting is modified.') }}</p>
+            <p class="mt-1">{{ __('Are you sure you would like to unsubscribe?') }}</p>
+        </x-slot>
+
+        <x-slot name="footer">
+            <x-secondary-button wire:click="$toggle('showUnsubscriptionModal')" wire:loading.attr="disabled">
+                {{ __('Cancel') }}
+            </x-secondary-button>
+
+            <x-danger-button class="ml-3" wire:click="unsubscribe" wire:loading.attr="disabled">
+                {{ __('Unsubscribe') }}
             </x-danger-button>
         </x-slot>
     </x-dialog-modal>
@@ -211,6 +246,7 @@
             }
 
             function sendTokenToServer(currentToken) {
+                // TODO: Check token validity on server .... unless it never expires
                 if (!isTokenSentToServer()) {
                     console.log('Sending token to server...');
                     const data = {
@@ -270,10 +306,29 @@
                 // Delete registration token.
                 messaging.getToken().then((currentToken) => {
                     messaging.deleteToken(currentToken).then(() => {
-                        console.log('Token deleted.');
-                        setTokenSentToServer(false);
+                        console.log('Deleting token from server...');
+                        
+                        fetch("http://localhost:8000/unsubscribe", {
+                            method: "DELETE",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                        }).then(response => {
+                            if (response.ok) {
+                                console.log("Token successfully deleted");
+                                setTokenSentToServer(false);
+                            } else {
+                                console.error("Token deletion failed");
+                            }
+                        }).catch(error => {
+                            console.error("Error: ", error);
+                        });
+
+                        // console.log('Token deleted.');
+                        // setTokenSentToServer(false);
                         // Once token is deleted update UI.
-                        resetUI();
+                        // resetUI();
+                        
                     }).catch((err) => {
                         console.log('Unable to delete token. ', err);
                     });
