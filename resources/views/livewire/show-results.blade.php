@@ -76,6 +76,7 @@
                 requestPermission();
                 console.log('Closing Subscription modal.');
                 this.showSubscriptionModal = ! this.showSubscriptionModal;
+                setTimeout(() => Livewire.emit('refresh-page'), 3000);              
             };
             getSubscriptionStatus = () => {
                 return isTokenSentToServer() ? '{{ __('Subscribed') }}' : '{{ __('Subscribe') }}';
@@ -96,7 +97,7 @@
                 deleteToken();
                 console.log('Closing Unsubscription modal.');
                 this.showUnsubscriptionModal = ! this.showUnsubscriptionModal;
-                // Livewire.emit('refresh-page');
+                setTimeout(() => Livewire.emit('refresh-page'), 3000);              
             });
         }
 
