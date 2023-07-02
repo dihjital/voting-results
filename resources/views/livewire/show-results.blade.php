@@ -254,7 +254,7 @@
                         token: currentToken
                     };
 
-                    fetch("http://localhost:8000/subscribe", {
+                    fetch("{{ self::URL }}/subscribe", {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json"
@@ -267,7 +267,7 @@
                         } else {
                             console.error("token registration failed");
                         }
-                    }).catch(error => {
+                    }).catch(error => { 
                         console.error("Error: ", error);
                     });
                 } else {
@@ -309,7 +309,7 @@
                     messaging.deleteToken(currentToken).then(() => {
                         console.log('Deleting token from server...');
                         
-                        fetch("http://localhost:8000/unsubscribe", {
+                        fetch("{{ self::URL }}/unsubscribe", {
                             method: "DELETE",
                             headers: {
                                 "Content-Type": "application/json"

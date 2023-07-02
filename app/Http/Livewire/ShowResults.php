@@ -25,7 +25,8 @@ class ShowResults extends Component
         'refresh-page'  => '$refresh',
     ];
 
-    const URL = 'http://localhost:8000';
+    // const URL = 'http://localhost:8000';
+    const URL = 'http://159.223.131.76';
 
     public function mount($question_id)
     {
