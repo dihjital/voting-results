@@ -18,8 +18,7 @@ class ShowQuestions extends Component
     public $question_id;
     public $question_text;
 
-    // const URL = 'http://localhost:8000';
-    const URL = 'http://159.223.131.76';
+    const URL = 'http://localhost:8000';
 
     const PAGINATING = TRUE;
 
@@ -32,9 +31,9 @@ class ShowQuestions extends Component
         //
     }
 
-    public static function getURL(): string
+    public static function getURL()
     {
-        return self::URL;
+        return env('API_ENDPOINT', self::URL);
     }
 
     public static function getPAGINATING(): bool
@@ -45,7 +44,7 @@ class ShowQuestions extends Component
     public function fetchData($page = null)
     {
         try {
-            $url = self::URL.'/questions';
+            $url = self::getURL().'/questions';
             
             if (self::PAGINATING) {
                 $currentPage = $page ?? request('page', 1);

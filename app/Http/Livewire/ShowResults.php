@@ -25,15 +25,14 @@ class ShowResults extends Component
         'refresh-page'  => '$refresh',
     ];
 
-    // const URL = 'http://localhost:8000';
-    const URL = 'http://159.223.131.76';
+    const URL = 'http://localhost:8000';
 
     public function mount($question_id)
     {
         $this->question_id = $question_id;
         // Get the question text ...
         try {
-            $url = self::URL.'/questions/'.$this->question_id;
+            $url = self::getURL().'/questions/'.$this->question_id;
             
             $response = Http::get($url)->throwUnlessStatus(200)->json();               
         } catch (\Exception $e) {
@@ -41,6 +40,11 @@ class ShowResults extends Component
         }
         $this->question_text = $response['question_text'];
         $this->fetchData();
+    }
+
+    public static function getURL()
+    {
+        return env('API_ENDPOINT', self::URL);
     }
 
     public function requestPermission()
@@ -63,7 +67,7 @@ class ShowResults extends Component
     public function fetchData(): void
     {
         try {
-            $url = self::URL.'/questions/'.$this->question_id.'/votes';
+            $url = self::getURL().'/questions/'.$this->question_id.'/votes';
             
             $response = Http::get($url)->throwUnlessStatus(200)->json();               
         } catch (\Exception $e) {

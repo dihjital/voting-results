@@ -115,7 +115,7 @@
             <x-action-message class="ml-3" on="subscribed">
                 {{ __('Subscribed.') }}
             </x-action-message>
-            <x-button x-show="isSubscribed()" class="ml-3" wire:click="$toggle('showUnsubscriptionModal')">
+            <x-button x-show="isSubscribed()" wire:click="$toggle('showUnsubscriptionModal')">
                 <span>{{ __('Unsubscribe') }}</span>
             </x-button>
             <x-action-message class="ml-3" on="unsubscribed">
@@ -254,7 +254,7 @@
                         token: currentToken
                     };
 
-                    fetch("{{ self::URL }}/subscribe", {
+                    fetch("{{ self::getURL() }}/subscribe", {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json"
@@ -309,7 +309,7 @@
                     messaging.deleteToken(currentToken).then(() => {
                         console.log('Deleting token from server...');
                         
-                        fetch("{{ self::URL }}/unsubscribe", {
+                        fetch("{{ self::getURL() }}/unsubscribe", {
                             method: "DELETE",
                             headers: {
                                 "Content-Type": "application/json"

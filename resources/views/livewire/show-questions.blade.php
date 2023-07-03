@@ -22,8 +22,8 @@
                 <x-table.cell>{{ $q['number_of_votes'] }}</x-table.cell>
                 <x-table.cell class="text-sm font-medium space-x-2">
                     @php
-                        $carbonDate = $q['last_updated_at_vote']
-                            ? \Carbon\Carbon::parse($q['last_updated_at_vote'])
+                        $carbonDate = $q['last_vote_at']
+                            ? \Carbon\Carbon::parse($q['last_vote_at'])
                             : null; 
                         $humanReadable = $carbonDate?->diffForHumans();
                     @endphp
