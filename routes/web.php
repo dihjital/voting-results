@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,8 +14,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Auth::loginUsingId(1, $remember = true);
+
 Route::get('/', function () {
-    return view('welcome');
+    // return view('welcome');
+    return redirect()->route('questions');
 });
 
 Route::middleware([
@@ -23,7 +27,8 @@ Route::middleware([
     'verified'
 ])->group(function () {
     Route::get('/dashboard', function () {
-        return view('dashboard');
+        // return view('dashboard');
+        return redirect()->route('questions');
     })->name('dashboard');
     Route::get('/questions', function () {
         return view('list-all-questions');

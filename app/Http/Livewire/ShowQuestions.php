@@ -15,21 +15,9 @@ class ShowQuestions extends Component
 
     public $error_message;
 
-    public $question_id;
-    public $question_text;
-
     const URL = 'http://localhost:8000';
 
     const PAGINATING = TRUE;
-
-    protected $rules = [
-        'question_text' => 'required|min:6',
-    ];
-
-    public function mount()
-    {
-        //
-    }
 
     public static function getURL()
     {

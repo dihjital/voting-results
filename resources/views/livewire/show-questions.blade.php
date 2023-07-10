@@ -12,12 +12,23 @@
         </x-slot>
         <x-slot name="body">
             @forelse($questions as $q)
-            <x-table.row wire:loading.class.delay="opacity-75" wire:key="row-{{ $q['id'] }}">
+            <x-table.row wire:loading.class.delay="opacity-75" 
+                         wire:key="row-{{ $q['id'] }}"
+                         @class([
+                            "bg-gray-200 dark:bg-gray-600" => $q['is_closed'],
+                         ])>
                 <x-table.cell>{{ $q['id'] }}</x-table.cell>
                 <x-table.cell>
-                    <a href="/questions/{{ $q['id'] }}/votes">
-                        {{ $q['question_text'] }}
-                    </a>
+                    <div class="flex flex-col">
+                        @if($q['is_closed'])
+                        <span class="text-sm font-medium text-gray-600 dark:text-gray-400 uppercase">
+                            {{ __('This question is closed for modification!') }}
+                        </span>
+                        @endif
+                        <a href="/questions/{{ $q['id'] }}/votes">
+                            {{ $q['question_text'] }}
+                        </a>
+                    </div>
                 </x-table.cell>
                 <x-table.cell>{{ $q['number_of_votes'] }}</x-table.cell>
                 <x-table.cell class="text-sm font-medium space-x-2">
@@ -43,7 +54,7 @@
     </x-table>
 
     <div class="mt-4">
-        @if(App\Http\Livewire\ShowQuestions::PAGINATING)
+        @if(self::PAGINATING)
             {{ $questions->links() }}
         @endif
     </div>
