@@ -127,17 +127,27 @@
         <div class="mx-40 pb-10">
             <x-table>
                 <x-slot name="head">
-                    <x-table.heading class="w-2/12">{{ __('Vote number') }}</x-table.heading>
-                    <x-table.heading class="w-6/12">{{ __('Vote text') }}</x-table.heading>
-                    <x-table.heading class="w-2/12">{{ __('Number of votes received') }}</x-table.heading>
+                    <x-table.heading class="bg-blue-300 dark:bg-blue-400 w-2/12">{{ __('Vote #') }}</x-table.heading>
+                    <x-table.heading class="bg-blue-300 dark:bg-blue-400 w-8/12">{{ __('Vote text') }}</x-table.heading>
+                    <x-table.heading class="bg-blue-300 dark:bg-blue-400 w-2/12">{{ __('# of votes received') }}</x-table.heading>
                 </x-slot>
                 <x-slot name="body">
                     @forelse($votes as $v)
                     <x-table.row wire:loading.class.delay="opacity-75" wire:key="row-{{ $v['id'] }}">
-                        <x-table.cell>{{ $v['id'] }}</x-table.cell>
-                        <x-table.cell>{{ $v['vote_text'] }}</x-table.cell>
                         <x-table.cell>
-                            <span x-text="voteResults[{{ $loop->index }}]"></span>
+                            <div class="text-sm text-gray-600 dark:text-gray-400">
+                                {{ $v['id'] }}
+                            </div>
+                        </x-table.cell>
+                        <x-table.cell>
+                            <div class="text-sm text-gray-600 dark:text-gray-400">
+                                {{ $v['vote_text'] }}
+                            </div>
+                        </x-table.cell>
+                        <x-table.cell>
+                            <div class="text-sm text-gray-600 dark:text-gray-400">
+                                <span x-text="voteResults[{{ $loop->index }}]"></span>
+                            </div>
                         </x-table.cell>
                     </x-table.row>
                     @empty
