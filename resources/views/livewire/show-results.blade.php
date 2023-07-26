@@ -12,8 +12,8 @@
         showSubscriptionModal: @entangle('showSubscriptionModal'),
         showUnsubscriptionModal: @entangle('showUnsubscriptionModal'),
 
-        showTable: false,
-        showMap: false,
+        showTable: @entangle('showTable'),
+        showMap: @entangle('showMap'),
 
         init() {
 
@@ -265,11 +265,12 @@
                 <span x-on:click="showTable = ! showTable" class="cursor-pointer"><i x-bind:class="{ 'fa-rotate-180': !showTable }" class="fa-solid fa-chevron-up fa-border hover:bg-gray-600 dark:hover:bg-gray-400" style="color: lightgray; --fa-border-padding: .25em; --fa-border-radius: 25%; --fa-border-width: .15em;"></i></span>
                 <span class="text-sm text-gray-400 dark:text-gray-200 font-bold uppercase px-2">{{ __('Table') }}</span>
                 <div class="mx-40" x-show="voteResults.length > 0 && showTable"> <!-- Move this to an accordion -->
+                    <x-button class="dark:bg-gray-400" wire:click="exportVotes" title="{{ __('Export to Excel') }}" arial-label="{{ __('Export to Excel') }}"><i class="fa-solid fa-file-export fa-sm p-1"></i></x-button>
                     <x-table>
                         <x-slot name="head">
-                            <x-table.heading class="bg-white text-xs dark:bg-gray-200 w-2/12">{{ __('#') }}</x-table.heading>
-                            <x-table.heading class="bg-white text-xs dark:bg-gray-200 w-8/12">{{ __('Vote text') }}</x-table.heading>
-                            <x-table.heading class="bg-white text-xs dark:bg-gray-200 w-2/12">{{ __('# of votes') }}</x-table.heading>
+                            <x-table.heading class="w-2/12">{{ __('#') }}</x-table.heading>
+                            <x-table.heading class="w-8/12">{{ __('Vote text') }}</x-table.heading>
+                            <x-table.heading class="w-2/12">{{ __('# of votes') }}</x-table.heading>
                         </x-slot>
                         <x-slot name="body">
                             @forelse($votes as $v)
@@ -315,9 +316,9 @@
                     <div class="w-6/12">
                         <x-table>
                             <x-slot name="head">
-                                <x-table.heading class="bg-white text-xs dark:bg-gray-200 w-4/12">{{ __('Country') }}</x-table.heading>
-                                <x-table.heading class="bg-white text-xs dark:bg-gray-200 w-4/12">{{ __('City') }}</x-table.heading>
-                                <x-table.heading class="bg-white text-xs dark:bg-gray-200 w-4/12">{{ __('# of votes') }}</x-table.heading>
+                                <x-table.heading class="w-4/12">{{ __('Country') }}</x-table.heading>
+                                <x-table.heading class="w-4/12">{{ __('City') }}</x-table.heading>
+                                <x-table.heading class="w-4/12">{{ __('# of votes') }}</x-table.heading>
                             </x-slot>
                             <x-slot name="body">
                                 <template x-for="location in locations" :key="location.id">

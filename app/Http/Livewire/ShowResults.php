@@ -4,6 +4,8 @@ namespace App\Http\Livewire;
 
 use Livewire\Component;
 use Illuminate\Support\Facades\Http;
+use App\Exports\VotesExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ShowResults extends Component
 {
@@ -21,6 +23,9 @@ class ShowResults extends Component
 
     public $showSubscriptionModal = false;
     public $showUnsubscriptionModal = false;
+
+    public $showTable = false;
+    public $showMap = false;
 
     protected $listeners = [
         'refresh-chart' => 'refreshChart',
@@ -42,6 +47,19 @@ class ShowResults extends Component
         }
         $this->question_text = $response['question_text'];
         $this->fetchData();
+
+        $this->showTable = session()->get($question_id.':showTable');
+        $this->showMap = session()->get($question_id.':showMap');
+    }
+
+    public function updatedshowTable()
+    {
+        session()->put($this->question_id.':showTable', $this->showTable);
+    }
+
+    public function updatedshowMap()
+    {
+        session()->put($this->question_id.':showMap', $this->showMap);
     }
 
     public static function getURL()
@@ -110,6 +128,13 @@ class ShowResults extends Component
         return array_map(
             fn($vote) => $vote['number_of_votes'], $results
         );
+    }
+
+    public function exportVotes()
+    {
+        $export = new VotesExport($this->votes);
+    
+        return Excel::download($export, 'votes.xlsx');
     }
 
 }
