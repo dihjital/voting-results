@@ -16,7 +16,7 @@
             <x-table.row wire:loading.class.delay="opacity-75" 
                          wire:key="row-{{ $q['id'] }}"
                          @class([
-                            "bg-yellow-200 dark:bg-yellow-600" => $q['is_closed'],
+                            "bg-yellow-400 dark:bg-yellow-200" => $q['is_closed'],
                          ])>
                 <x-table.cell>{{ $q['id'] }}</x-table.cell>
                 <x-table.cell>
@@ -27,7 +27,7 @@
                 <x-table.cell>
                     <div class="flex flex-col">
                         @if($q['is_closed'])
-                        <span class="text-sm font-medium text-gray-600 dark:text-gray-400 uppercase">
+                        <span class="text-sm font-medium text-gray-600 dark:text-gray-500 uppercase">
                             {{ __('This question is closed for modification!') }}
                         </span>
                         @endif

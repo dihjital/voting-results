@@ -6,12 +6,120 @@
         voteTexts: @entangle('vote_texts'),
         voteResults: @entangle('vote_results'),
         questionText: @entangle('question_text'),
+
+        locations: @entangle('locations'),
+
         showSubscriptionModal: @entangle('showSubscriptionModal'),
         showUnsubscriptionModal: @entangle('showUnsubscriptionModal'),
 
-        init() {
-            const ctx = this.$refs.canvas;
+        showTable: false,
+        showMap: false,
 
+        init() {
+
+            const map = L.map('map').setView([51.505, -0.09], 13); // Set initial map view
+
+            const noData = {
+                id: 'emptyChart',
+                afterDraw(chart, args, options) {
+                    const { datasets } = chart.data;
+                    let hasData = false;
+            
+                    for (let dataset of datasets) {
+                        //set this condition according to your needs
+                        if (dataset.data.length > 0 && dataset.data.some(item => item !== 0)) {
+                            hasData = true;
+                            break;
+                        }
+                    }
+            
+                    if (!hasData) {
+                        //type of ctx is CanvasRenderingContext2D
+                        //https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D
+                        //modify it to your liking
+                        const { chartArea: { left, top, right, bottom }, ctx } = chart;
+                        const centerX = (left + right) / 2;
+                        const centerY = (top + bottom) / 2;
+            
+                        chart.clear();
+                        ctx.save();
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.font = 'normal 16px sans-serif';
+                        ctx.fillStyle = '#9CA3AF';
+                        ctx.fillText('{{ __('No data to display') }}'.toUpperCase(), centerX, centerY);
+                        ctx.restore();
+                    }
+                }
+            };
+
+            const layerRegistry = {};
+
+            const addNamedLayer = (name, layer) => {
+                layerRegistry[name] = layer;
+                layer.addTo(map);
+            };
+
+            const isLayerAdded = (name) => {
+                return !!layerRegistry[name] && map.hasLayer(layerRegistry[name]);
+            };
+
+            const initMap = () => {
+                tileLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                });
+                addNamedLayer('TileLayer', tileLayer);
+
+                const pinnedLocations = 
+                    this.locations.map(location => [location.latitude, location.longitude]);
+
+                const bounds = L.latLngBounds(pinnedLocations); // Calculate the bounding box
+                map.fitBounds(bounds); // Adjust map view to show all pinned locations
+
+                // Loop through the pinned locations and add markers to the map
+                pinnedLocations.forEach(location => L.marker(location).addTo(map));
+            };
+            this.locations.length > 0 && initMap();
+
+            const refreshMap = () => {
+                const allMarkers = [];
+
+                const addLocationToMap = (latitude, longitude) => {
+                    const marker = L.marker([latitude, longitude]).addTo(map);
+                    allMarkers.push(marker);
+                };
+
+                const reZoomMapToFitMarkers = () => {
+                    const group = new L.featureGroup(allMarkers);
+                    map.fitBounds(group.getBounds());
+                };
+
+                if (isLayerAdded('TileLayer')) {
+                    this.locations.forEach(location => addLocationToMap(location.latitude, location.longitude));
+                    reZoomMapToFitMarkers(); // Re-zoom the map to fit all markers
+                } else {
+                    initMap();
+                }
+            };
+
+            const changeChartColorScheme = () => {
+                const x = chart.config.options.scales.x;
+                const y = chart.config.options.scales.y;
+                if (darkMode === 'dark') {
+                    Chart.defaults.color = 'white';
+                    chart.config.data.datasets[0].backgroundColor = '#FDE68A'; // yellow-200
+                    x.ticks.color = y.ticks.color = 'lightgray';
+                    x.border.color = y.border.color = 'white';
+                } else {
+                    Chart.defaults.color = 'black';
+                    chart.config.data.datasets[0].backgroundColor = 'lightblue';
+                    x.ticks.color = y.ticks.color = 'gray';
+                    x.border.color = y.border.color = 'gray';
+                }
+                chart.update();
+            };
+    
+            const ctx = this.$refs.canvas;
             let chart = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -32,12 +140,16 @@
                     scales: {
                         x: {
                             grid: {
-                                display: false // Remove x-axis grid
+                                display: false, // Remove x-axis grid
+                            },
+                            border: {
+                                color: 'gray',
+                                width: .1
                             },
                             type: 'linear',
                             ticks: {
                                 stepSize: 1,
-                                precision: 0
+                                precision: 0,
                             },
                         },
                         y: {
@@ -47,10 +159,14 @@
                                     return labelValue.length > 15
                                         ? labelValue.substr(0, 15) + '...'
                                         : labelValue;
-                                }
+                                },
                             },
                             grid: {
-                                display: false // Remove y-axis grid,
+                                display: false, // Remove y-axis grid,
+                            },
+                            border: {
+                                color: 'gray',
+                                width: .1
                             },
                             beginAtZero: true,
                         }
@@ -67,11 +183,15 @@
                         },
                         legend: {
                             display: false // Hide the legend
-                        }
+                        },
                     },
                     indexAxis: 'y',
-                }
+                },
+                plugins: [noData],
             });
+
+            changeChartColorScheme();
+
             confirmSubscription = () => {
                 requestPermission();
                 console.log('Closing Subscription modal.');
@@ -84,11 +204,19 @@
             isSubscribed = () => {
                 return isTokenSentToServer();
             }
+
+            // Listeners
+            document.getElementById('themeSelectorButton').addEventListener('click', () => {
+                changeChartColorScheme();
+            });
             Livewire.on('chart-refreshed', () => {
                 chart.data.labels = this.voteTexts;
                 chart.data.datasets[0].data = this.voteResults;
                 chart.options.plugins.title.text = `${this.questionText}` + ' (' + this.voteResults.reduce((a, b) => a + b) + ')';
                 chart.update();
+
+                // Refresh map
+                this.locations.length > 0 && refreshMap();
             });
             Livewire.on('request-permission', () => {
                 confirmSubscription();
@@ -108,6 +236,7 @@
     @if($error_message)
         <p class="text-lg text-center font-medium text-red-500">{{ $error_message }}</p>
     @else
+        <!-- Button Section -->
         <div class="flex items-center">
             <x-button x-show="!isSubscribed()" wire:click="$toggle('showSubscriptionModal')">
                 <span>{{ __('Subscribe') }}</span>
@@ -122,46 +251,95 @@
                 {{ __('Unsubscribed.') }}
             </x-action-message>
         </div>
-        <canvas class="pt-10 mx-40" id="resultsChart" x-ref="canvas"></canvas>
-        <x-section-border />
-        <div class="mx-40 pb-10">
-            <x-table>
-                <x-slot name="head">
-                    <x-table.heading class="bg-blue-300 dark:bg-blue-400 w-2/12">{{ __('Vote #') }}</x-table.heading>
-                    <x-table.heading class="bg-blue-300 dark:bg-blue-400 w-8/12">{{ __('Vote text') }}</x-table.heading>
-                    <x-table.heading class="bg-blue-300 dark:bg-blue-400 w-2/12">{{ __('# of votes received') }}</x-table.heading>
-                </x-slot>
-                <x-slot name="body">
-                    @forelse($votes as $v)
-                    <x-table.row wire:loading.class.delay="opacity-75" wire:key="row-{{ $v['id'] }}">
-                        <x-table.cell>
-                            <div class="text-sm text-gray-600 dark:text-gray-400">
-                                {{ $v['id'] }}
-                            </div>
-                        </x-table.cell>
-                        <x-table.cell>
-                            <div class="text-sm text-gray-600 dark:text-gray-400">
-                                {{ $v['vote_text'] }}
-                            </div>
-                        </x-table.cell>
-                        <x-table.cell>
-                            <div class="text-sm text-gray-600 dark:text-gray-400">
-                                <span x-text="voteResults[{{ $loop->index }}]"></span>
-                            </div>
-                        </x-table.cell>
-                    </x-table.row>
-                    @empty
-                    <x-table.row wire:key="row-empty">
-                        <x-table.cell colspan="4" class="whitespace-nowrap">
-                            <div class="flex justify-center items-center">
-                                <span class="py-8 text-base text-center font-medium text-gray-400 uppercase">{{ __('There are no votes for this questions in the database') }} ...</span>
-                            </div>
-                        </x-table.cell>
-                    </x-table.row>
-                    @endforelse
-                </x-slot>
-            </x-table>
+
+        <!-- Chart Section -->
+        <div class="mt-5 md:mt-5">
+            <div class="px-4 py-5 sm:p-6 bg-white dark:bg-gray-600 shadow sm:rounded-lg">
+                <canvas class="pt-10 mx-40" id="resultsChart" x-ref="canvas" x-show="voteResults.length > 0"></canvas>
+            </div>
         </div>
+        
+        <!-- Table Section -->
+        <div class="mt-5 md:mt-5">
+            <div class="px-4 py-5 sm:p-6 bg-white dark:bg-gray-600 shadow sm:rounded-lg">
+                <span x-on:click="showTable = ! showTable" class="cursor-pointer"><i x-bind:class="{ 'fa-rotate-180': !showTable }" class="fa-solid fa-chevron-up fa-border hover:bg-gray-600 dark:hover:bg-gray-400" style="color: lightgray; --fa-border-padding: .25em; --fa-border-radius: 25%; --fa-border-width: .15em;"></i></span>
+                <span class="text-sm text-gray-400 dark:text-gray-200 font-bold uppercase px-2">{{ __('Table') }}</span>
+                <div class="mx-40" x-show="voteResults.length > 0 && showTable"> <!-- Move this to an accordion -->
+                    <x-table>
+                        <x-slot name="head">
+                            <x-table.heading class="bg-white text-xs dark:bg-gray-200 w-2/12">{{ __('#') }}</x-table.heading>
+                            <x-table.heading class="bg-white text-xs dark:bg-gray-200 w-8/12">{{ __('Vote text') }}</x-table.heading>
+                            <x-table.heading class="bg-white text-xs dark:bg-gray-200 w-2/12">{{ __('# of votes') }}</x-table.heading>
+                        </x-slot>
+                        <x-slot name="body">
+                            @forelse($votes as $v)
+                            <x-table.row wire:loading.class.delay="opacity-75" wire:key="row-{{ $v['id'] }}">
+                                <x-table.cell>
+                                    <div class="text-sm text-gray-600 dark:text-gray-400">
+                                        {{ $v['id'] }}
+                                    </div>
+                                </x-table.cell>
+                                <x-table.cell>
+                                    <div class="text-sm text-gray-600 dark:text-gray-400">
+                                        {{ $v['vote_text'] }}
+                                    </div>
+                                </x-table.cell>
+                                <x-table.cell>
+                                    <div class="text-sm text-gray-600 dark:text-gray-400">
+                                        <span x-text="voteResults[{{ $loop->index }}]"></span>
+                                    </div>
+                                </x-table.cell>
+                            </x-table.row>
+                            @empty
+                            <x-table.row wire:key="row-empty">
+                                <x-table.cell colspan="4" class="whitespace-nowrap">
+                                    <div class="flex justify-center items-center">
+                                        <span class="py-8 text-base text-center font-medium text-gray-400 uppercase">{{ __('There are no votes for this question in the database') }} ...</span>
+                                    </div>
+                                </x-table.cell>
+                            </x-table.row>
+                            @endforelse
+                        </x-slot>
+                    </x-table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Map Section -->
+        <div class="mt-5 md:mt-5">
+            <div class="px-4 py-5 sm:p-6 bg-white dark:bg-gray-600 shadow sm:rounded-lg">
+                <span x-on:click="showMap = ! showMap" class="cursor-pointer"><i x-bind:class="{ 'fa-rotate-180': !showMap }" class="fa-solid fa-chevron-up fa-border hover:bg-gray-600 dark:hover:bg-gray-400" style="color: lightgray; --fa-border-padding: .25em; --fa-border-radius: 25%; --fa-border-width: .15em;"></i></span>
+                <span class="text-sm text-gray-400 dark:text-gray-200 font-bold uppercase px-2">{{ __('Map') }}</span>
+                <div class="mx-40 flex items-start space-x-5" x-show="locations.length > 0 && showMap">
+                    <div id="map" style="width: 50%; height: 50vh; border-radius: 10px; overflow: hidden;"></div>
+                    <div class="w-6/12">
+                        <x-table>
+                            <x-slot name="head">
+                                <x-table.heading class="bg-white text-xs dark:bg-gray-200 w-4/12">{{ __('Country') }}</x-table.heading>
+                                <x-table.heading class="bg-white text-xs dark:bg-gray-200 w-4/12">{{ __('City') }}</x-table.heading>
+                                <x-table.heading class="bg-white text-xs dark:bg-gray-200 w-4/12">{{ __('# of votes') }}</x-table.heading>
+                            </x-slot>
+                            <x-slot name="body">
+                                <template x-for="location in locations" :key="location.id">
+                                    <x-table.row wire:loading.class.delay="opacity-75">
+                                        <x-table.cell>
+                                            <span class="text-xs" x-text="location.country_name"></span>
+                                        </x-table.cell>
+                                        <x-table.cell>
+                                            <span class="text-xs" x-text="location.city"></span>
+                                        </x-table.cell>
+                                        <x-table.cell>
+                                            <span class="text-xs" x-text="location.vote_count"></span>
+                                        </x-table.cell>
+                                    </x-table.row>
+                                </template>
+                            </x-slot>
+                        </x-table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     @endif
 
     <!-- Subscription Modal -->
@@ -209,7 +387,7 @@
     </x-dialog-modal>
 
     @push('scripts')
-        <script> 
+        <script>
             // Your web app's Firebase configuration
             const firebaseConfig = {
                 apiKey: "AIzaSyCuXCsziu1yv8qMD0RcDPTM38jsz9dbc7Q",

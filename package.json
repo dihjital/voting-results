@@ -22,6 +22,7 @@
     "dependencies": {
         "@fortawesome/fontawesome-free": "^6.4.0",
         "alpine": "^0.2.1",
-        "chartjs": "^0.3.24"
+        "chartjs": "^0.3.24",
+        "leaflet": "^1.9.4"
     }
 }

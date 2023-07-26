@@ -15,6 +15,8 @@ class ShowResults extends Component
     public $vote_texts;
     public $vote_results;
 
+    public $locations;
+
     public $error_message;
 
     public $showSubscriptionModal = false;
@@ -74,10 +76,26 @@ class ShowResults extends Component
             $this->error_message = $e->getMessage();
         }
 
+        $this->fetchLocations();
+
         $this->votes = $response;
         $this->vote_texts = $this->getVoteTexts($response);
-        $this->vote_results = $this->getVoteResults($response);
+        $this->vote_results = $this->getVoteResults($response) ?: [0]; // Client side can reduce this
         $this->emit('chart-refreshed');
+    }
+
+    public function fetchLocations(): void
+    {
+        try {
+            $url = self::getURL().'/questions/'.$this->question_id.'/votes/locations';
+
+            $response = Http::get($url)->throwUnlessStatus(200)->json();
+        } catch (\Exception $e) {
+            $this->error_message = $e->getMessage();
+        }
+
+        $this->locations = $response;
+        // TODO: If response is empty then handle it at the client side ...
     }
 
     public function getVoteTexts($results): array
