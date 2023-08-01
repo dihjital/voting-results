@@ -41,10 +41,11 @@ class ShowResults extends Component
         try {
             $url = self::getURL().'/questions/'.$this->question_id;
             
-            $response = Http::get($url)->throwUnlessStatus(200)->json();   
-            
-            // TODO ... nincsen hibaüzenet, azonban a response üres ... akkor ha nincsen ilyen 
-            // question_id az adatbázisban, mint ami a request-ben van ...
+            // TODO: Itt is kell a user_id ....
+            $response = Http::get($url, [
+                'user_id' => request('user_id'),
+            ])->throwUnlessStatus(200)->json();   
+
             $this->question_text = $response['question_text'];
             $this->fetchData();
 
@@ -94,17 +95,17 @@ class ShowResults extends Component
             
             $response = Http::get($url, [
                 'user_id' => request('user_id'),
-            ])->throwUnlessStatus(200)->json();               
+            ])->throwUnlessStatus(200)->json();
+            
+            $this->fetchLocations();
+
+            $this->votes = $response;
+            $this->vote_texts = $this->getVoteTexts($response);
+            $this->vote_results = $this->getVoteResults($response) ?: [0]; // Client side can reduce this
+            $this->emit('chart-refreshed');
         } catch (\Exception $e) {
             $this->error_message = $e->getMessage();
         }
-
-        $this->fetchLocations();
-
-        $this->votes = $response;
-        $this->vote_texts = $this->getVoteTexts($response);
-        $this->vote_results = $this->getVoteResults($response) ?: [0]; // Client side can reduce this
-        $this->emit('chart-refreshed');
     }
 
     public function fetchLocations(): void
