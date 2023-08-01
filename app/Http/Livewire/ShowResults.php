@@ -41,15 +41,18 @@ class ShowResults extends Component
         try {
             $url = self::getURL().'/questions/'.$this->question_id;
             
-            $response = Http::get($url)->throwUnlessStatus(200)->json();               
+            $response = Http::get($url)->throwUnlessStatus(200)->json();   
+            
+            // TODO ... nincsen hibaüzenet, azonban a response üres ... akkor ha nincsen ilyen 
+            // question_id az adatbázisban, mint ami a request-ben van ...
+            $this->question_text = $response['question_text'];
+            $this->fetchData();
+
+            $this->showTable = session()->get($question_id.':showTable');
+            $this->showMap = session()->get($question_id.':showMap');
         } catch (\Exception $e) {
             $this->error_message = $e->getMessage();
         }
-        $this->question_text = $response['question_text'];
-        $this->fetchData();
-
-        $this->showTable = session()->get($question_id.':showTable');
-        $this->showMap = session()->get($question_id.':showMap');
     }
 
     public function updatedshowTable()
@@ -89,7 +92,9 @@ class ShowResults extends Component
         try {
             $url = self::getURL().'/questions/'.$this->question_id.'/votes';
             
-            $response = Http::get($url)->throwUnlessStatus(200)->json();               
+            $response = Http::get($url, [
+                'user_id' => request('user_id'),
+            ])->throwUnlessStatus(200)->json();               
         } catch (\Exception $e) {
             $this->error_message = $e->getMessage();
         }

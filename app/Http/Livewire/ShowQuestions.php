@@ -10,7 +10,6 @@ use Livewire\Component;
 
 class ShowQuestions extends Component
 {
-
     use WithPerPagePagination;
 
     public $error_message;
