@@ -105,6 +105,7 @@
             const changeChartColorScheme = () => {
                 const x = chart.config.options.scales.x;
                 const y = chart.config.options.scales.y;
+
                 if (darkMode === 'dark') {
                     Chart.defaults.color = 'white';
                     chart.config.data.datasets[0].backgroundColor = '#FDE68A'; // yellow-200
@@ -116,6 +117,7 @@
                     x.ticks.color = y.ticks.color = 'gray';
                     x.border.color = y.border.color = 'gray';
                 }
+                
                 chart.update();
             };
     

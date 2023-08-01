@@ -37,6 +37,7 @@ class ShowQuestions extends Component
             if (self::PAGINATING) {
                 $currentPage = $page ?? request('page', 1);
                 $url .= '?page='.$currentPage;
+                request('user_id') && $url .= '&user_id='.request('user_id');
             }
             
             $response = Http::get($url)->throwUnlessStatus(200);
