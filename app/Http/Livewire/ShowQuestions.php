@@ -2,7 +2,9 @@
 
 namespace App\Http\Livewire;
 
+use App\Http\Livewire\Traits\WithErrorMessage;
 use App\Http\Livewire\Traits\WithPerPagePagination;
+
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Http;
 
@@ -10,9 +12,7 @@ use Livewire\Component;
 
 class ShowQuestions extends Component
 {
-    use WithPerPagePagination;
-
-    public $error_message;
+    use WithPerPagePagination, WithErrorMessage;
 
     const URL = 'http://localhost:8000';
 
@@ -54,7 +54,7 @@ class ShowQuestions extends Component
                 
             return $paginator;
         } catch (\Exception $e) {
-            $this->error_message = $e->getMessage();
+            $this->error_message = $this->parseErrorMessage($e->getMessage());
         } 
     }
 

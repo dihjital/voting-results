@@ -7,8 +7,11 @@ use Illuminate\Support\Facades\Http;
 use App\Exports\VotesExport;
 use Maatwebsite\Excel\Facades\Excel;
 
+use App\Http\Livewire\Traits\WithErrorMessage;
+
 class ShowResults extends Component
 {
+    use WithErrorMessage;
 
     public $question_id;
     public $question_text;
@@ -18,8 +21,6 @@ class ShowResults extends Component
     public $vote_results;
 
     public $locations;
-
-    public $error_message;
 
     public $showSubscriptionModal = false;
     public $showUnsubscriptionModal = false;
@@ -41,9 +42,10 @@ class ShowResults extends Component
         try {
             $url = self::getURL().'/questions/'.$this->question_id;
             
-            // TODO: Itt is kell a user_id ....
-            $response = Http::get($url, [
-                'user_id' => request('user_id'),
+            $response = Http::withHeaders([
+                'session-id' => '',
+            ])->get($url, [
+                'user_id' => request('user_id'), // Until it is not mandatory
             ])->throwUnlessStatus(200)->json();   
 
             $this->question_text = $response['question_text'];
@@ -52,7 +54,7 @@ class ShowResults extends Component
             $this->showTable = session()->get($question_id.':showTable');
             $this->showMap = session()->get($question_id.':showMap');
         } catch (\Exception $e) {
-            $this->error_message = $e->getMessage();
+            $this->error_message = $this->parseErrorMessage($e->getMessage());
         }
     }
 
@@ -93,8 +95,10 @@ class ShowResults extends Component
         try {
             $url = self::getURL().'/questions/'.$this->question_id.'/votes';
             
-            $response = Http::get($url, [
-                'user_id' => request('user_id'),
+            $response = Http::withHeaders([
+                'session-id' => '',
+            ])->get($url, [
+                'user_id' => request('user_id'), // Until it is not mandatory
             ])->throwUnlessStatus(200)->json();
             
             $this->fetchLocations();
@@ -104,7 +108,7 @@ class ShowResults extends Component
             $this->vote_results = $this->getVoteResults($response) ?: [0]; // Client side can reduce this
             $this->emit('chart-refreshed');
         } catch (\Exception $e) {
-            $this->error_message = $e->getMessage();
+            $this->error_message = $this->parseErrorMessage($e->getMessage());
         }
     }
 
@@ -113,13 +117,15 @@ class ShowResults extends Component
         try {
             $url = self::getURL().'/questions/'.$this->question_id.'/votes/locations';
 
-            $response = Http::get($url)->throwUnlessStatus(200)->json();
+            // TODO: If response is empty then handle it at the client side ...
+            $this->locations = Http::withHeaders([
+                'session-id' => '',
+            ])->get($url, [
+                'user_id' => request('user_id'), // Until it is not mandatory
+            ])->throwUnlessStatus(200)->json();
         } catch (\Exception $e) {
-            $this->error_message = $e->getMessage();
+            $this->error_message = $this->parseErrorMessage($e->getMessage());
         }
-
-        $this->locations = $response;
-        // TODO: If response is empty then handle it at the client side ...
     }
 
     public function getVoteTexts($results): array
@@ -142,5 +148,4 @@ class ShowResults extends Component
     
         return Excel::download($export, 'votes.xlsx');
     }
-
 }
