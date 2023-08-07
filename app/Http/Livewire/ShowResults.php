@@ -3,11 +3,16 @@
 namespace App\Http\Livewire;
 
 use Livewire\Component;
+
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Auth;
+
 use App\Exports\VotesExport;
 use Maatwebsite\Excel\Facades\Excel;
 
 use App\Http\Livewire\Traits\WithErrorMessage;
+use App\Mail\EmailVotingResults;
 
 class ShowResults extends Component
 {
@@ -147,5 +152,21 @@ class ShowResults extends Component
         $export = new VotesExport($this->votes);
     
         return Excel::download($export, 'votes.xlsx');
+    }
+
+    public function mailVotes()
+    {
+        $attachment = new VotesExport($this->votes);
+    
+        Mail::to(Auth::user()->email)->send(new EmailVotingResults(
+            $attachment,
+            $this->votes,
+            (object) [
+                'id' => $this->question_id,
+                'text' => $this->question_text,
+            ],
+        ));
+
+        // session()->flash('message', 'Excel file has been sent successfully!');
     }
 }
