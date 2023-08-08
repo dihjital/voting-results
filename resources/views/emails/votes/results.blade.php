@@ -1,5 +1,5 @@
 @component('mail::message')
-{{ __('You have been receiving the voting results for ":questionText" question!', ['questionText' => $questionText]) }}
+{{ __('You have been receiving the voting results for _":questionText"_ question!', ['questionText' => $questionText]) }}
 
 @component('mail::table')
 | #     | VOTE TEXT | # OF VOTES |
@@ -15,5 +15,5 @@
 {{ __('Check out the results') }}
 @endcomponent
 
-{{ __('If you did not expect to receive an invitation to this team, you may discard this email.') }}
+<font size="2">{{ __('This email was intended for :userName', ['userName' => $userName]) }}. {{ __('You are receiving emails from the ') }} **{{ config('app.name') }}** {{ __(' application.') }}</font>
 @endcomponent

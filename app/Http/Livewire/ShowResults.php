@@ -12,11 +12,17 @@ use App\Exports\VotesExport;
 use Maatwebsite\Excel\Facades\Excel;
 
 use App\Http\Livewire\Traits\WithErrorMessage;
+use App\Http\Livewire\Traits\WithOAuthLogin;
+use App\Http\Livewire\Traits\WithUUIDSession;
+
 use App\Mail\EmailVotingResults;
 
 class ShowResults extends Component
 {
-    use WithErrorMessage;
+    use WithOAuthLogin, WithUUIDSession, WithErrorMessage;
+
+    public $access_token;
+    public $refresh_token;
 
     public $question_id;
     public $question_text;
@@ -43,21 +49,32 @@ class ShowResults extends Component
     public function mount($question_id)
     {
         $this->question_id = $question_id;
-        // Get the question text ...
+
+        // Try to log in ...
         try {
-            $url = self::getURL().'/questions/'.$this->question_id;
-            
-            $response = Http::withHeaders([
-                'session-id' => '',
-            ])->get($url, [
-                'user_id' => request('user_id'), // Until it is not mandatory
-            ])->throwUnlessStatus(200)->json();   
+            list($this->access_token, $this->refresh_token) = $this->login();
 
-            $this->question_text = $response['question_text'];
-            $this->fetchData();
+            // Send over the current user uuid and get a session id back
+            $this->registerUUIDInSession($this->access_token);
 
-            $this->showTable = session()->get($question_id.':showTable');
-            $this->showMap = session()->get($question_id.':showMap');
+            // Get the question text ...
+            try {
+                $url = self::getURL().'/questions/'.$this->question_id;
+                
+                $response = Http::withHeaders([
+                    'session-id' => $this->session_id,
+                ])->get($url, [
+                    'user_id' => Auth::id(), // Until it is not mandatory
+                ])->throwUnlessStatus(200)->json();   
+
+                $this->question_text = $response['question_text'];
+                $this->fetchData();
+
+                $this->showTable = session()->get($question_id.':showTable');
+                $this->showMap = session()->get($question_id.':showMap');
+            } catch (\Exception $e) {
+                $this->error_message = $this->parseErrorMessage($e->getMessage());
+            }
         } catch (\Exception $e) {
             $this->error_message = $this->parseErrorMessage($e->getMessage());
         }
@@ -101,9 +118,9 @@ class ShowResults extends Component
             $url = self::getURL().'/questions/'.$this->question_id.'/votes';
             
             $response = Http::withHeaders([
-                'session-id' => '',
+                'session-id' => $this->session_id,
             ])->get($url, [
-                'user_id' => request('user_id'), // Until it is not mandatory
+                'user_id' => Auth::id(), // Until it is not mandatory
             ])->throwUnlessStatus(200)->json();
             
             $this->fetchLocations();
@@ -124,9 +141,9 @@ class ShowResults extends Component
 
             // TODO: If response is empty then handle it at the client side ...
             $this->locations = Http::withHeaders([
-                'session-id' => '',
+                'session-id' => $this->session_id,
             ])->get($url, [
-                'user_id' => request('user_id'), // Until it is not mandatory
+                'user_id' => Auth::id(), // Until it is not mandatory
             ])->throwUnlessStatus(200)->json();
         } catch (\Exception $e) {
             $this->error_message = $this->parseErrorMessage($e->getMessage());
@@ -159,6 +176,7 @@ class ShowResults extends Component
         $attachment = new VotesExport($this->votes);
     
         Mail::to(Auth::user()->email)->send(new EmailVotingResults(
+            Auth::user(),
             $attachment,
             $this->votes,
             (object) [
@@ -167,6 +185,6 @@ class ShowResults extends Component
             ],
         ));
 
-        // session()->flash('message', 'Excel file has been sent successfully!');
+        // session()->flash('message', 'Voting results has been sent successfully!');
     }
 }

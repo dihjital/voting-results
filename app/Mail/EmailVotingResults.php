@@ -16,6 +16,8 @@ use App\Exports\VotesExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\Excel as BaseExcel;
 
+use App\Models\User;
+
 class EmailVotingResults extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
@@ -24,6 +26,7 @@ class EmailVotingResults extends Mailable implements ShouldQueue
      * Create a new message instance.
      */
     public function __construct(
+        public User $user,
         public VotesExport $votesExport,
         public $voteResults,
         public $question,
@@ -69,6 +72,7 @@ class EmailVotingResults extends Mailable implements ShouldQueue
         return new Content(
             markdown: 'emails.votes.results',
             with: [
+                'userName' => $this->user->name,
                 'questionId' => $this->question->id,
                 'questionText' => $this->question->text,
                 'voteResults' => $this->voteResults,
