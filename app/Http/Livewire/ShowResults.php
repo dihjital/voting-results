@@ -16,10 +16,11 @@ use App\Http\Livewire\Traits\WithOAuthLogin;
 use App\Http\Livewire\Traits\WithUUIDSession;
 
 use App\Mail\EmailVotingResults;
+use Laravel\Jetstream\InteractsWithBanner;
 
 class ShowResults extends Component
 {
-    use WithOAuthLogin, WithUUIDSession, WithErrorMessage;
+    use InteractsWithBanner, WithOAuthLogin, WithUUIDSession, WithErrorMessage;
 
     public $access_token;
     public $refresh_token;
@@ -185,6 +186,6 @@ class ShowResults extends Component
             ],
         ));
 
-        // session()->flash('message', 'Voting results has been sent successfully!');
+        $this->banner(__('Voting results are sent successfully!'));
     }
 }
