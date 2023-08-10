@@ -317,7 +317,7 @@
                 <span class="text-sm text-gray-400 dark:text-gray-200 font-bold uppercase px-2">{{ __('Map') }}</span>
                 <div class="mx-40 flex items-start space-x-5" x-show="locations.length > 0 && showMap">
                     <div id="map" style="width: 50%; height: 50vh; border-radius: 10px; overflow: hidden;"></div>
-                    <div class="w-6/12">
+                    <div class="w-6/12 overflow-y-auto" style="height: 50vh">
                         <x-table>
                             <x-slot name="head">
                                 <x-table.heading class="w-4/12">{{ __('Country') }}</x-table.heading>

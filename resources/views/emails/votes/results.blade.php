@@ -3,7 +3,7 @@
 
 @component('mail::table')
 | #     | VOTE TEXT | # OF VOTES |
-| :---- | :-------: | --------:  |
+| :---- | :-------- | :--------: |
 @foreach($voteResults as $result)
 | {{ $result['id'] }} | {{ $result['vote_text'] }} | {{ $result['number_of_votes'] }} |
 @endforeach

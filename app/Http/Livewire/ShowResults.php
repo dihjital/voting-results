@@ -65,7 +65,7 @@ class ShowResults extends Component
                 $response = Http::withHeaders([
                     'session-id' => $this->session_id,
                 ])->get($url, [
-                    'user_id' => Auth::id(), // Until it is not mandatory
+                    // 'user_id' => Auth::id(), // Until it is not mandatory
                 ])->throwUnlessStatus(200)->json();   
 
                 $this->question_text = $response['question_text'];
@@ -121,7 +121,7 @@ class ShowResults extends Component
             $response = Http::withHeaders([
                 'session-id' => $this->session_id,
             ])->get($url, [
-                'user_id' => Auth::id(), // Until it is not mandatory
+                // 'user_id' => Auth::id(), // Until it is not mandatory
             ])->throwUnlessStatus(200)->json();
             
             $this->fetchLocations();
@@ -144,7 +144,7 @@ class ShowResults extends Component
             $this->locations = Http::withHeaders([
                 'session-id' => $this->session_id,
             ])->get($url, [
-                'user_id' => Auth::id(), // Until it is not mandatory
+                // 'user_id' => Auth::id(), // Until it is not mandatory
             ])->throwUnlessStatus(200)->json();
         } catch (\Exception $e) {
             $this->error_message = $this->parseErrorMessage($e->getMessage());
