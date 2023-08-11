@@ -12,18 +12,14 @@ use App\Exports\VotesExport;
 use Maatwebsite\Excel\Facades\Excel;
 
 use App\Http\Livewire\Traits\WithErrorMessage;
-use App\Http\Livewire\Traits\WithOAuthLogin;
-use App\Http\Livewire\Traits\WithUUIDSession;
+use App\Http\Livewire\Traits\WithLogin;
 
 use App\Mail\EmailVotingResults;
 use Laravel\Jetstream\InteractsWithBanner;
 
 class ShowResults extends Component
 {
-    use InteractsWithBanner, WithOAuthLogin, WithUUIDSession, WithErrorMessage;
-
-    public $access_token;
-    public $refresh_token;
+    use InteractsWithBanner, WithLogin, WithErrorMessage;
 
     public $question_id;
     public $question_text;
@@ -51,12 +47,9 @@ class ShowResults extends Component
     {
         $this->question_id = $question_id;
 
-        // Try to log in ...
+        // Check if the application has logged in to the API back-end successfully ...
         try {
-            list($this->access_token, $this->refresh_token) = $this->login();
-
-            // Send over the current user uuid and get a session id back
-            $this->registerUUIDInSession($this->access_token);
+            $this->login();
 
             // Get the question text ...
             try {
