@@ -55,11 +55,13 @@ class ShowResults extends Component
             try {
                 $url = self::getURL().'/questions/'.$this->question_id;
                 
-                $response = Http::withHeaders([
-                    'session-id' => $this->session_id,
-                ])->get($url, [
-                    // 'user_id' => Auth::id(), // Until it is not mandatory
-                ])->throwUnlessStatus(200)->json();   
+                $response = Http::withToken($this->access_token)
+                    ->withHeaders([
+                        'session-id' => $this->session_id,
+                    ])
+                    ->get($url)
+                    ->throwUnlessStatus(200)
+                    ->json();   
 
                 $this->question_text = $response['question_text'];
                 $this->fetchData();
@@ -111,11 +113,12 @@ class ShowResults extends Component
         try {
             $url = self::getURL().'/questions/'.$this->question_id.'/votes';
             
-            $response = Http::withHeaders([
-                'session-id' => $this->session_id,
-            ])->get($url, [
-                // 'user_id' => Auth::id(), // Until it is not mandatory
-            ])->throwUnlessStatus(200)->json();
+            $response = Http::withToken($this->access_token)
+                ->withHeaders([
+                    'session-id' => $this->session_id,
+                ])
+                ->get($url)
+                ->throwUnlessStatus(200)->json();
             
             $this->fetchLocations();
 
@@ -134,11 +137,12 @@ class ShowResults extends Component
             $url = self::getURL().'/questions/'.$this->question_id.'/votes/locations';
 
             // TODO: If response is empty then handle it at the client side ...
-            $this->locations = Http::withHeaders([
-                'session-id' => $this->session_id,
-            ])->get($url, [
-                // 'user_id' => Auth::id(), // Until it is not mandatory
-            ])->throwUnlessStatus(200)->json();
+            $this->locations = Http::withToken($this->access_token)
+                ->withHeaders([
+                    'session-id' => $this->session_id,
+                ])
+                ->get($url)
+                ->throwUnlessStatus(200)->json();
         } catch (\Exception $e) {
             $this->error_message = $this->parseErrorMessage($e->getMessage());
         }

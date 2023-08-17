@@ -44,7 +44,8 @@ class ShowQuestions extends Component
         try {
             $url = self::getURL().'/questions';
 
-            $response = Http::withHeaders([
+            $response = Http::withToken($this->access_token)
+                ->withHeaders([
                     'session-id' => $this->session_id
                 ])->get($url, array_filter([
                     'page' => self::getPAGINATING() ? $page ?? request('page', 1) : '',
