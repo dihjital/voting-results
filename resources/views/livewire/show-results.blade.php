@@ -444,7 +444,8 @@
                 if (!isTokenSentToServer()) {
                     console.log('Sending token to server...');
                     const data = {
-                        token: currentToken
+                        user: '{{ Auth::id() }}',
+                        token: currentToken,
                     };
 
                     fetch("{{ self::getURL() }}/subscribe", {
@@ -470,11 +471,44 @@
             }
 
             function isTokenSentToServer() {
-                return window.localStorage.getItem('sentToServer') === '1';
+                // return window.localStorage.getItem('sentToServer') === '1';
+                return getWithExpiry('sentToServer') === '1';
+            }
+
+            function setWithExpiry(key, value, ttl) {
+                const now = new Date();
+
+                const item = {
+                    value: value,
+                    expiry: now.getTime() + ttl,
+                };
+                window.localStorage.setItem(key, JSON.stringify(item));
+            }
+
+            function getWithExpiry(key) {
+                const itemStr = window.localStorage.getItem(key);
+
+                // if the item doesn't exist, return null
+                if (!itemStr) {
+                    return null;
+                }
+
+                const item = JSON.parse(itemStr);
+                const now = new Date();
+
+                // compare the expiry time of the item with the current time
+                if (now.getTime() > item.expiry) {
+                    window.localStorage.removeItem(key);
+                    return null;
+                }
+                return item.value;
             }
 
             function setTokenSentToServer(sent) {
-                window.localStorage.setItem('sentToServer', sent ? '1' : '0');
+                // window.localStorage.setItem('sentToServer', sent ? '1' : '0');
+                const oneWeek = 3600000 * 24 * 7;
+
+                setWithExpiry('sentToServer', sent ? '1' : '0', oneWeek);
             }
 
             function showHideDiv(divId, show) {
@@ -501,18 +535,22 @@
                 messaging.getToken().then((currentToken) => {
                     messaging.deleteToken(currentToken).then(() => {
                         console.log('Deleting token from server...');
+                        const data = {
+                            user: '{{ Auth::id() }}',
+                        };
                         
                         fetch("{{ self::getURL() }}/unsubscribe", {
                             method: "DELETE",
                             headers: {
                                 "Content-Type": "application/json"
                             },
+                            body: JSON.stringify(data)
                         }).then(response => {
                             if (response.ok) {
-                                console.log("Token successfully deleted");
+                                console.log("token successfully deleted");
                                 setTokenSentToServer(false);
                             } else {
-                                console.error("Token deletion failed");
+                                console.error("token deletion failed");
                             }
                         }).catch(error => {
                             console.error("Error: ", error);
