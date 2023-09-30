@@ -471,44 +471,64 @@
             }
 
             function isTokenSentToServer() {
-                // return window.localStorage.getItem('sentToServer') === '1';
-                return getWithExpiry('sentToServer') === '1';
+                return getWithExpiry('{{ md5(Auth::id()) }}') === '1';
             }
 
-            function setWithExpiry(key, value, ttl) {
-                const now = new Date();
+            function getItemFromLocalStorage(itemName) {
+                return window.localStorage.getItem(itemName) || null;
+            }
 
+            function setItemInLocalStorage(itemName, item) {
+                window.localStorage.setItem(itemName, JSON.stringify(item));
+            }
+
+            function setWithExpiry(key, value, ttl) {                
+                const sentToServer = JSON.parse(getItemFromLocalStorage('sentToServer'));
+
+                const now = new Date();
+                
                 const item = {
                     value: value,
                     expiry: now.getTime() + ttl,
                 };
-                window.localStorage.setItem(key, JSON.stringify(item));
+
+                if (!sentToServer) {
+                    sentToServer = {};
+                }
+                sentToServer[key] = item;
+
+                setItemInLocalStorage('sentToServer', sentToServer);
             }
 
             function getWithExpiry(key) {
-                const itemStr = window.localStorage.getItem(key);
+                const sentToServer = JSON.parse(getItemFromLocalStorage('sentToServer'));
 
                 // if the item doesn't exist, return null
-                if (!itemStr) {
+                if (!sentToServer) {
                     return null;
                 }
 
-                const item = JSON.parse(itemStr);
                 const now = new Date();
 
-                // compare the expiry time of the item with the current time
-                if (now.getTime() > item.expiry) {
-                    window.localStorage.removeItem(key);
+                if (!(key in sentToServer)) {
                     return null;
                 }
-                return item.value;
+
+                // Compare the expiry time of the item with the current time
+                if (now.getTime() > sentToServer[key].expiry) {
+                    delete sentToServer.key;
+                    setItemInLocalStorage('sentToServer', sentToServer);
+                    deleteToken();
+                    return null;
+                }
+
+                return sentToServer[key].value;
             }
 
             function setTokenSentToServer(sent) {
-                // window.localStorage.setItem('sentToServer', sent ? '1' : '0');
                 const oneWeek = 3600000 * 24 * 7;
 
-                setWithExpiry('sentToServer', sent ? '1' : '0', oneWeek);
+                setWithExpiry('{{ md5(Auth::id()) }}', sent ? '1' : '0', oneWeek);
             }
 
             function showHideDiv(divId, show) {
