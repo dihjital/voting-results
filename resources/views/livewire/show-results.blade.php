@@ -483,7 +483,7 @@
             }
 
             function setWithExpiry(key, value, ttl) {                
-                const sentToServer = JSON.parse(getItemFromLocalStorage('sentToServer'));
+                let sentToServer = JSON.parse(getItemFromLocalStorage('sentToServer'));
 
                 const now = new Date();
                 
@@ -501,7 +501,7 @@
             }
 
             function getWithExpiry(key) {
-                const sentToServer = JSON.parse(getItemFromLocalStorage('sentToServer'));
+                let sentToServer = JSON.parse(getItemFromLocalStorage('sentToServer'));
 
                 // if the item doesn't exist, return null
                 if (!sentToServer) {
