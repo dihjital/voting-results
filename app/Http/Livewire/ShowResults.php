@@ -4,6 +4,8 @@ namespace App\Http\Livewire;
 
 use Livewire\Component;
 
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Auth;
@@ -184,5 +186,16 @@ class ShowResults extends Component
         ));
 
         $this->banner(__('Voting results are sent successfully!'));
+    }
+
+    public function generateQrCode($question_id = null)
+    {
+        // TODO: Move this to a separate method
+        $url = env('CLIENT_URL', 'https://voting-client.votes365.org');
+        $url .= '/questions/'.($question_id ?: $this->question_id).'/votes?uuid='.Auth::id();
+
+        return base64_encode(QrCode::format('png')
+            ->size(200)
+            ->generate($url));
     }
 }
