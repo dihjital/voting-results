@@ -341,7 +341,7 @@
                 <span x-on:click="showMap = ! showMap" class="cursor-pointer"><i x-bind:class="{ 'fa-rotate-180': !showMap }" class="fa-solid fa-chevron-up fa-border hover:bg-gray-600 dark:hover:bg-gray-400" style="color: lightgray; --fa-border-padding: .25em; --fa-border-radius: 25%; --fa-border-width: .15em;"></i></span>
                 <span class="text-sm text-gray-400 dark:text-gray-200 font-bold uppercase px-2">{{ __('Map') }}</span>
                 <div class="mx-40 flex items-start space-x-5" x-show="locations.length > 0 && showMap">
-                    <div id="map" style="width: 50%; height: 50vh; border-radius: 10px; overflow: hidden;"></div>
+                    <div id="map" class="hidden lg:flex" style="width: 50%; height: 50vh; border-radius: 10px; overflow: hidden;"></div>
                     <div class="w-6/12 overflow-y-auto" style="height: 50vh;">
                         <x-table>
                             <x-slot name="head">
