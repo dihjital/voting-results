@@ -256,7 +256,7 @@
 
         <!-- Toast for QR code -->
         <div 
-            x-data="{ isRight: false }"
+            x-data="{ isRight: true }"
             :class="{ 'max-w-xs': !isRight, 'max-w-none': isRight }"
             id="toast-default"
             class="hidden lg:flex fixed bottom-10 left-5 flex items-stretch bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800 z-50" 
