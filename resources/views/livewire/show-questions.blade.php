@@ -5,7 +5,7 @@
     @else
     <x-table>
         <x-slot name="head">
-            <x-table.heading class="w-1/12">{{ __('Question #') }}</x-table.heading>
+            <x-table.heading class="w-1/12">#</x-table.heading>
             <x-table.heading class="w-1/12"></x-table.heading>
             <x-table.heading class="w-6/12">{{ __('Question text') }}</x-table.heading>
             <x-table.heading class="w-2/12">{{ __('# of answer(s)') }}</x-table.heading>
@@ -16,7 +16,7 @@
             <x-table.row wire:loading.class.delay="opacity-75" 
                          wire:key="row-{{ $q['id'] }}"
                          @class([
-                            "bg-yellow-400 dark:bg-yellow-200" => $q['is_closed'],
+                            "bg-yellow-100 dark:bg-yellow-100" => $q['is_closed'],
                          ])>
                 <x-table.cell>{{ $q['id'] }}</x-table.cell>
                 <x-table.cell>
