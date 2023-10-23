@@ -8,7 +8,7 @@
             <x-table.heading class="w-1/12">#</x-table.heading>
             <x-table.heading class="w-1/12"></x-table.heading>
             <x-table.heading class="w-6/12">{{ __('Question text') }}</x-table.heading>
-            <x-table.heading class="w-2/12">{{ __('# of answer(s)') }}</x-table.heading>
+            <x-table.heading class="w-2/12">{{ __('# of answers') }}</x-table.heading>
             <x-table.heading class="w-2/12">{{ __('Last voting') }}</x-table.heading>
         </x-slot>
         <x-slot name="body">
@@ -16,7 +16,7 @@
             <x-table.row wire:loading.class.delay="opacity-75" 
                          wire:key="row-{{ $q['id'] }}"
                          @class([
-                            "bg-yellow-100 dark:bg-yellow-100" => $q['is_closed'],
+                            "bg-[#FEF3C7] dark:bg-[#FEF3C7]" => $q['is_closed'],
                          ])>
                 <x-table.cell>{{ $q['id'] }}</x-table.cell>
                 <x-table.cell>
