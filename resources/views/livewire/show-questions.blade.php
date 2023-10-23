@@ -16,7 +16,7 @@
             <x-table.row wire:loading.class.delay="opacity-75" 
                          wire:key="row-{{ $q['id'] }}"
                          @class([
-                            "bg-[#FEF3C7] dark:bg-[#FEF3C7]" => $q['is_closed'],
+                            "bg-yellow-100 dark:bg-yellow-100" => $q['is_closed'],
                          ])>
                 <x-table.cell>{{ $q['id'] }}</x-table.cell>
                 <x-table.cell>

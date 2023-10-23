@@ -165,7 +165,7 @@ trait WithOAuthLogin
             'password'  => $this->api_secret,
             'client_id' => $this->client_id,
             'client_secret' => $this->client_secret,
-            'scope' => 'list-questions list-votes',
+            'scope' => 'list-quizzes list-questions list-votes',
         ]);
 
         if (!$response->ok()) {
