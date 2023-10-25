@@ -292,7 +292,7 @@
         
         <!-- Table Section -->
         <div class="mt-5 md:mt-5">
-            <div class="px-4 py-5 sm:p-6 bg-white dark:bg-gray-600 shadow sm:rounded-lg">
+            <div class="px-4 py-5 sm:w-full sm:p-6 bg-white dark:bg-gray-600 shadow sm:rounded-lg">
                 <span x-on:click="showTable = ! showTable" class="cursor-pointer"><i x-bind:class="{ 'fa-rotate-180': !showTable }" class="fa-solid fa-chevron-up fa-border hover:bg-gray-600 dark:hover:bg-gray-400" style="color: lightgray; --fa-border-padding: .25em; --fa-border-radius: 25%; --fa-border-width: .15em;"></i></span>
                 <span class="text-sm text-gray-400 dark:text-gray-200 font-bold uppercase px-2">{{ __('Table') }}</span>
                 <div class="mx-40" x-show="voteResults.length > 0 && showTable"> <!-- Move this to an accordion -->
@@ -301,7 +301,7 @@
                     <x-button class="dark:bg-gray-400 ml-1" wire:click="mailVotes" title="{{ __('E-mail results') }}" arial-label="{{ __('E-mail results') }}"><i class="fa-solid fa-envelope fa-sm p-1"></i></x-button>
                     <x-table>
                         <x-slot name="head">
-                            <x-table.heading class="w-2/12">{{ __('#') }}</x-table.heading>
+                            <x-table.heading class="hidden lg:table-cell w-2/12">#</x-table.heading>
                             <x-table.heading class="w-8/12">{{ __('Vote text') }}</x-table.heading>
                             <x-table.heading class="w-2/12">{{ __('# of votes') }}</x-table.heading>
                         </x-slot>
@@ -309,7 +309,7 @@
 
                             <template x-for="vote in votes" :key="vote.id">
                                 <x-table.row wire:loading.class.delay="opacity-75">
-                                    <x-table.cell>
+                                    <x-table.cell class="hidden lg:table-cell">
                                         <span class="text-xs" x-text="vote.id"></span>
                                     </x-table.cell>
                                     <x-table.cell>
@@ -337,7 +337,7 @@
 
         <!-- Map Section -->
         <div class="mt-5 md:mt-5">
-            <div class="px-4 py-5 sm:p-6 bg-white dark:bg-gray-600 shadow sm:rounded-lg">
+            <div class="px-4 py-5 sm:w-full sm:p-6 bg-white dark:bg-gray-600 shadow sm:rounded-lg">
                 <span x-on:click="showMap = ! showMap" class="cursor-pointer"><i x-bind:class="{ 'fa-rotate-180': !showMap }" class="fa-solid fa-chevron-up fa-border hover:bg-gray-600 dark:hover:bg-gray-400" style="color: lightgray; --fa-border-padding: .25em; --fa-border-radius: 25%; --fa-border-width: .15em;"></i></span>
                 <span class="text-sm text-gray-400 dark:text-gray-200 font-bold uppercase px-2">{{ __('Map') }}</span>
                 <div class="mx-40 flex items-start space-x-5" x-show="locations.length > 0 && showMap">
