@@ -34,6 +34,8 @@ class ShowResults extends Component
 
     public $locations;
 
+    public $qrCodeImg;
+
     public $showSubscriptionModal = false;
     public $showUnsubscriptionModal = false;
 
@@ -124,7 +126,8 @@ class ShowResults extends Component
                     'session-id' => $this->session_id,
                 ])
                 ->get($url)
-                ->throwUnlessStatus(200)->json();
+                ->throwUnlessStatus(200)
+                ->json();
             
             $this->fetchLocations();
 
@@ -132,6 +135,8 @@ class ShowResults extends Component
             $this->vote_texts = $this->getVoteTexts($response);
             $this->vote_results = $this->getVoteResults($response) ?: [0]; // Client side can reduce this
             
+            $this->generateQrCode();
+
             $this->emit('chart-refreshed');
         } catch (\Exception $e) {
             $this->error_message = $this->parseErrorMessage($e->getMessage());
@@ -149,7 +154,8 @@ class ShowResults extends Component
                     'session-id' => $this->session_id,
                 ])
                 ->get($url)
-                ->throwUnlessStatus(200)->json();
+                ->throwUnlessStatus(200)
+                ->json();
         } catch (\Exception $e) {
             $this->error_message = $this->parseErrorMessage($e->getMessage());
         }
@@ -209,8 +215,9 @@ class ShowResults extends Component
         $url = env('CLIENT_URL', 'https://voting-client.votes365.org');
         $url .= '/questions/'.($question_id ?: $this->question_id).'/votes?uuid='.Auth::id();
 
-        return base64_encode(QrCode::format('png')
-            ->size(200)
-            ->generate($url));
+        $this->qrCodeImg = 
+            base64_encode(QrCode::format('png')
+                ->size(200)
+                ->generate($url));
     }
 }

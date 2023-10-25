@@ -16,6 +16,8 @@
         showTable: @entangle('showTable'),
         showMap: @entangle('showMap'),
 
+        qrCodeImg: @entangle('qrCodeImg'),
+
         init() {
 
             const map = L.map('map').setView([51.505, -0.09], 13); // Set initial map view
@@ -201,9 +203,11 @@
                 this.showSubscriptionModal = ! this.showSubscriptionModal;
                 setTimeout(() => Livewire.emit('refresh-page'), 3000);              
             };
+
             getSubscriptionStatus = () => {
                 return isTokenSentToServer() ? '{{ __('Subscribed') }}' : '{{ __('Subscribe') }}';
             };
+
             isSubscribed = () => {
                 return isTokenSentToServer();
             }
@@ -212,6 +216,7 @@
             document.getElementById('themeSelectorButton').addEventListener('click', () => {
                 changeChartColorScheme();
             });
+
             Livewire.on('chart-refreshed', () => {
                 chart.data.labels = this.voteTexts;
                 chart.data.datasets[0].data = this.voteResults;
@@ -221,9 +226,11 @@
                 // Refresh map
                 this.locations.length > 0 && refreshMap();
             });
+
             Livewire.on('request-permission', () => {
                 confirmSubscription();
             });
+
             Livewire.on('unsubscribe', () => {
                 deleteToken();
                 console.log('Closing Unsubscription modal.');
@@ -272,17 +279,16 @@
             </button>
             <div
                 x-show="!isRight"
+                x-text="'{{ __('Scan this QR code to vote for') }} ' + questionText"
                 class="p-4 flex text-sm font-medium items-center text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-800"
             >
-                {{ __('Scan this QR code to vote for ":question_text"', ['question_text' => $question_text]) }}
             </div>
             <!-- QR Code Block -->
             <div class="rounded-r-lg bg-white dark:bg-gray-800 p-2 font-normal flex-none flex items-center justify-center">
-                <img class="w-24 h-24" src="data:image/png;base64, {{ $this->generateQrCode() }}" alt="QR code for web based voting client for {{ $question_text }}">
+                <img class="w-24 h-24" x-bind:src="'data:image/png;base64,' + qrCodeImg" x-bind:alt="'{{ __('QR code for web based voting client for') }} ' + questionText">
             </div>
         </div>
         
-
         <!-- Chart Section -->
         <div class="mt-5 md:mt-5">
             <div class="px-4 py-5 sm:p-6 bg-white dark:bg-gray-600 shadow sm:rounded-lg">
