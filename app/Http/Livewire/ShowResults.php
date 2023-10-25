@@ -23,6 +23,8 @@ class ShowResults extends Component
 {
     use InteractsWithBanner, WithLogin, WithErrorMessage;
 
+    public $question;
+
     public $question_id;
     public $question_text;
 
@@ -63,7 +65,9 @@ class ShowResults extends Component
                     ])
                     ->get($url)
                     ->throwUnlessStatus(200)
-                    ->json();   
+                    ->json();
+
+                $this->question = $response;
 
                 $this->question_text = $response['question_text'];
                 $this->fetchData();
@@ -127,6 +131,7 @@ class ShowResults extends Component
             $this->votes = $response;
             $this->vote_texts = $this->getVoteTexts($response);
             $this->vote_results = $this->getVoteResults($response) ?: [0]; // Client side can reduce this
+            
             $this->emit('chart-refreshed');
         } catch (\Exception $e) {
             $this->error_message = $this->parseErrorMessage($e->getMessage());
@@ -162,6 +167,16 @@ class ShowResults extends Component
         return array_map(
             fn($vote) => $vote['number_of_votes'], $results
         );
+    }
+
+    public function caruselPrev()
+    {
+        $this->mount($this->question['previous_id'] ?? $this->question_id);
+    }
+
+    public function caruselNext()
+    {
+        $this->mount($this->question['next_id'] ?? $this->question_id);
     }
 
     public function exportVotes()

@@ -7,6 +7,7 @@
         voteResults: @entangle('vote_results'),
         questionText: @entangle('question_text'),
 
+        votes: @entangle('votes'),
         locations: @entangle('locations'),
 
         showSubscriptionModal: @entangle('showSubscriptionModal'),
@@ -238,6 +239,9 @@
     @if($this->hasErrorMessage())
         <x-error-page code="{{ $this->getStatusCode() }}" message="{{ $this->getErrorMessage() }}"></x-error-page>
     @else
+        <!-- Slider controls -->
+        <x-slider />
+
         <!-- Button Section -->
         <div class="flex items-center">
             <x-button x-show="!isSubscribed()" wire:click="$toggle('showSubscriptionModal')">
@@ -294,7 +298,7 @@
                 <div class="mx-40" x-show="voteResults.length > 0 && showTable"> <!-- Move this to an accordion -->
                     <!-- Buttons for the table -->
                     <x-button class="dark:bg-gray-400" wire:click="exportVotes" title="{{ __('Export to Excel') }}" arial-label="{{ __('Export to Excel') }}"><i class="fa-solid fa-file-export fa-sm p-1"></i></x-button>
-                    <x-button class="dark:bg-gray-400" wire:click="mailVotes" title="{{ __('E-mail results') }}" arial-label="{{ __('E-mail results') }}"><i class="fa-solid fa-envelope fa-sm p-1"></i></x-button>
+                    <x-button class="dark:bg-gray-400 ml-1" wire:click="mailVotes" title="{{ __('E-mail results') }}" arial-label="{{ __('E-mail results') }}"><i class="fa-solid fa-envelope fa-sm p-1"></i></x-button>
                     <x-table>
                         <x-slot name="head">
                             <x-table.heading class="w-2/12">{{ __('#') }}</x-table.heading>
@@ -302,33 +306,29 @@
                             <x-table.heading class="w-2/12">{{ __('# of votes') }}</x-table.heading>
                         </x-slot>
                         <x-slot name="body">
-                            @forelse($votes as $v)
-                            <x-table.row wire:loading.class.delay="opacity-75" wire:key="row-{{ $v['id'] }}">
-                                <x-table.cell>
-                                    <div class="text-sm text-gray-600 dark:text-gray-400">
-                                        {{ $v['id'] }}
-                                    </div>
-                                </x-table.cell>
-                                <x-table.cell>
-                                    <div class="text-sm text-gray-600 dark:text-gray-400">
-                                        {{ $v['vote_text'] }}
-                                    </div>
-                                </x-table.cell>
-                                <x-table.cell>
-                                    <div class="text-sm text-gray-600 dark:text-gray-400">
-                                        <span x-text="voteResults[{{ $loop->index }}]"></span>
-                                    </div>
-                                </x-table.cell>
-                            </x-table.row>
-                            @empty
-                            <x-table.row wire:key="row-empty">
+
+                            <template x-for="vote in votes" :key="vote.id">
+                                <x-table.row wire:loading.class.delay="opacity-75">
+                                    <x-table.cell>
+                                        <span class="text-xs" x-text="vote.id"></span>
+                                    </x-table.cell>
+                                    <x-table.cell>
+                                        <span class="text-xs" x-text="vote.vote_text"></span>
+                                    </x-table.cell>
+                                    <x-table.cell>
+                                        <span class="text-xs" x-text="vote.number_of_votes"></span>
+                                    </x-table.cell>
+                                </x-table.row>
+                            </template>
+
+                            <x-table.row wire:key="row-empty" x-show="!votes.length">
                                 <x-table.cell colspan="4" class="whitespace-nowrap">
                                     <div class="flex justify-center items-center">
                                         <span class="py-8 text-base text-center font-medium text-gray-400 uppercase">{{ __('There are no votes for this question in the database') }} ...</span>
                                     </div>
                                 </x-table.cell>
                             </x-table.row>
-                            @endforelse
+
                         </x-slot>
                     </x-table>
                 </div>
