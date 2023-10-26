@@ -178,7 +178,7 @@
                     },
                     plugins: {
                         title: {
-                            display: true,
+                            display: false, // Hide the title
                             text: `${this.questionText}` + ' (' + this.voteResults.reduce((a, b) => a + b) + ')',
                             position: 'top',
                             font: {
@@ -249,6 +249,13 @@
         <!-- Slider controls -->
         <x-slider />
 
+        <div class="py-4 flex justify-center items-center">
+            <h3
+                x-text="`${questionText}` + ' (' + voteResults.reduce((a, b) => a + b) + ')'"
+                class="text-lg text-center font-medium text-gray-900 dark:text-gray-100">
+            </h3>
+        </div>
+    
         <!-- Button Section -->
         <div class="hidden lg:flex items-center">
             <x-button x-show="!isSubscribed()" wire:click="$toggle('showSubscriptionModal')">
@@ -292,7 +299,7 @@
         <!-- Chart Section -->
         <div class="hidden lg:block mt-5 md:mt-5">
             <div class="px-4 py-5 sm:p-6 bg-white dark:bg-gray-600 shadow sm:rounded-lg">
-                <canvas class="pt-10 mx-40" id="resultsChart" x-ref="canvas" x-show="voteResults.length > 0"></canvas>
+                <canvas class="mx-40" id="resultsChart" x-ref="canvas" x-show="voteResults.length > 0"></canvas>
             </div>
         </div>
         
