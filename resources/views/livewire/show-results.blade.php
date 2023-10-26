@@ -310,6 +310,7 @@
             <div class="px-4 py-5 sm:w-full sm:p-6 bg-white dark:bg-gray-600 shadow sm:rounded-lg">
                 <span x-on:click="showTable = ! showTable" class="cursor-pointer"><i x-bind:class="{ 'fa-rotate-180': !showTable }" class="fa-solid fa-chevron-up fa-border hover:bg-gray-600 dark:hover:bg-gray-400" style="color: lightgray; --fa-border-padding: .25em; --fa-border-radius: 25%; --fa-border-width: .15em;"></i></span>
                 <span class="text-sm text-gray-400 dark:text-gray-200 font-bold uppercase px-2">{{ __('Table') }}</span>
+                <span><i class="fa-solid fa-table text-sm text-gray-400 dark:text-gray-200"></i></span>
                 <div class="mx-5 lg:mx-40 mt-5" x-show="voteResults.length > 0 && showTable"> <!-- Move this to an accordion -->
                     <!-- Buttons for the table -->
                     <x-button class="dark:bg-gray-400" wire:click="exportVotes" title="{{ __('Export to Excel') }}" arial-label="{{ __('Export to Excel') }}"><i class="fa-solid fa-file-export fa-sm p-1"></i></x-button>
@@ -355,7 +356,7 @@
             <div class="px-4 py-5 sm:w-full sm:p-6 bg-white dark:bg-gray-600 shadow sm:rounded-lg">
                 <span x-on:click="showMap = ! showMap" class="cursor-pointer"><i x-bind:class="{ 'fa-rotate-180': !showMap }" class="fa-solid fa-chevron-up fa-border hover:bg-gray-600 dark:hover:bg-gray-400" style="color: lightgray; --fa-border-padding: .25em; --fa-border-radius: 25%; --fa-border-width: .15em;"></i></span>
                 <span class="text-sm text-gray-400 dark:text-gray-200 font-bold uppercase px-2">{{ __('Map') }}</span>
-                <span>
+                <span x-show="locations.length > 0">
                     <button wire:click="$toggle('showLocationDetailsModal')">
                         <i class="fa-solid fa-location-dot text-sm text-gray-400 dark:text-gray-200"></i>
                     </button>
