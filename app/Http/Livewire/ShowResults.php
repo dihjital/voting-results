@@ -38,6 +38,7 @@ class ShowResults extends Component
 
     public $showSubscriptionModal = false;
     public $showUnsubscriptionModal = false;
+    public $showLocationDetailsModal = false;
 
     public $showTable = false;
     public $showMap = false;

@@ -12,6 +12,7 @@
 
         showSubscriptionModal: @entangle('showSubscriptionModal'),
         showUnsubscriptionModal: @entangle('showUnsubscriptionModal'),
+        showLocationDetailsModal: false,
 
         showTable: @entangle('showTable'),
         showMap: @entangle('showMap'),
@@ -354,37 +355,58 @@
             <div class="px-4 py-5 sm:w-full sm:p-6 bg-white dark:bg-gray-600 shadow sm:rounded-lg">
                 <span x-on:click="showMap = ! showMap" class="cursor-pointer"><i x-bind:class="{ 'fa-rotate-180': !showMap }" class="fa-solid fa-chevron-up fa-border hover:bg-gray-600 dark:hover:bg-gray-400" style="color: lightgray; --fa-border-padding: .25em; --fa-border-radius: 25%; --fa-border-width: .15em;"></i></span>
                 <span class="text-sm text-gray-400 dark:text-gray-200 font-bold uppercase px-2">{{ __('Map') }}</span>
+                <span>
+                    <button wire:click="$toggle('showLocationDetailsModal')">
+                        <i class="fa-solid fa-location-dot text-sm text-gray-400 dark:text-gray-200"></i>
+                    </button>
+                </span>
                 <div class="mx-5 lg:mx-40 mt-5 flex flex-col" x-show="locations.length > 0 && showMap">
-                    <div id="map" class="flew-grow w-full" style="height: 50vh; border-radius: 10px; overflow: hidden;"></div>
-                    {{-- <div class="w-full lg:w-auto overflow-y-auto" style="height: 50vh;">
-                        <x-table>
-                            <x-slot name="head">
-                                <x-table.heading class="w-4/12">{{ __('Country') }}</x-table.heading>
-                                <x-table.heading class="w-4/12">{{ __('City') }}</x-table.heading>
-                                <x-table.heading class="w-4/12">{{ __('# of votes') }}</x-table.heading>
-                            </x-slot>
-                            <x-slot name="body">
-                                <template x-for="location in locations" :key="location.id">
-                                    <x-table.row wire:loading.class.delay="opacity-75">
-                                        <x-table.cell>
-                                            <span class="text-xs" x-text="location.country_name"></span>
-                                        </x-table.cell>
-                                        <x-table.cell>
-                                            <span class="text-xs" x-text="location.city"></span>
-                                        </x-table.cell>
-                                        <x-table.cell>
-                                            <span class="text-xs" x-text="location.vote_count"></span>
-                                        </x-table.cell>
-                                    </x-table.row>
-                                </template>
-                            </x-slot>
-                        </x-table>
-                    </div> --}}
+                    <div id="map" class="flew-grow w-full rounded-lg z-0" style="height: 50vh; overflow: hidden;"></div>
                 </div>
             </div>
         </div>
 
     @endif
+
+    <!-- Location Details Modal -->
+    <x-dialog-modal wire:model="showLocationDetailsModal">
+        <x-slot name="title">
+            {{ __('Voter locations details') }}
+        </x-slot>
+
+        <x-slot name="content">
+            <div class="w-full">
+                <x-table>
+                    <x-slot name="head">
+                        <x-table.heading class="w-4/12">{{ __('Country') }}</x-table.heading>
+                        <x-table.heading class="w-4/12">{{ __('City') }}</x-table.heading>
+                        <x-table.heading class="w-4/12">{{ __('# of votes') }}</x-table.heading>
+                    </x-slot>
+                    <x-slot name="body">
+                        <template x-for="location in locations" :key="location.id">
+                            <x-table.row wire:loading.class.delay="opacity-75">
+                                <x-table.cell>
+                                    <span class="text-xs" x-text="location.country_name"></span>
+                                </x-table.cell>
+                                <x-table.cell>
+                                    <span class="text-xs" x-text="location.city"></span>
+                                </x-table.cell>
+                                <x-table.cell>
+                                    <span class="text-xs" x-text="location.vote_count"></span>
+                                </x-table.cell>
+                            </x-table.row>
+                        </template>
+                    </x-slot>
+                </x-table>
+            </div>  
+        </x-slot>
+
+        <x-slot name="footer">
+            <x-secondary-button wire:click="$toggle('showLocationDetailsModal')" wire:loading.attr="disabled">
+                {{ __('OK') }}
+            </x-secondary-button>
+        </x-slot>
+    </x-dialog-modal>
 
     <!-- Subscription Modal -->
     <x-dialog-modal wire:model="showSubscriptionModal">
