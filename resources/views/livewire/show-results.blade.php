@@ -279,12 +279,12 @@
             x-data="{ isRight: true }"
             :class="{ 'max-w-xs': !isRight, 'max-w-none': isRight }"
             id="toast-default"
-            class="hidden lg:flex fixed bottom-10 left-5 flex items-stretch bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800 z-50" 
+            class="hidden lg:flex fixed bottom-10 right-5 flex items-stretch bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800 z-50" 
             role="alert"
         >
             <button x-on:click="isRight = !isRight" class="flex-none w-10 rounded-l-lg bg-[#ADD8E6] dark:bg-yellow-200">
-                <i x-show="!isRight" class="fa-solid fa-chevron-left text-gray-800"></i>
-                <i x-show="isRight" class="fa-solid fa-chevron-right text-gray-800"></i>
+                <i x-show="isRight" class="fa-solid fa-chevron-left text-gray-800"></i>
+                <i x-show="!isRight" class="fa-solid fa-chevron-right text-gray-800"></i>
             </button>
             <div
                 x-show="!isRight"
