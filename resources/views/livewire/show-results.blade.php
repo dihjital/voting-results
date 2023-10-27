@@ -17,6 +17,8 @@
         showTable: @entangle('showTable'),
         showMap: @entangle('showMap'),
 
+        isMobile: false,
+
         qrCodeImg: @entangle('qrCodeImg'),
 
         init() {
@@ -198,6 +200,10 @@
 
             changeChartColorScheme();
 
+            $watch('isMobile', (value) => {
+                this.showTable = this.showTable || value;
+            });
+
             confirmSubscription = () => {
                 requestPermission();
                 console.log('Closing Subscription modal.');
@@ -304,10 +310,10 @@
                 <canvas class="mx-40" id="resultsChart" x-ref="canvas" x-show="voteResults.length > 0"></canvas>
             </div>
         </div>
-        
+       
         <!-- Table Section -->
         <div class="mt-5 md:mt-5">
-            <div x-screen="showTable = ($width < 1024)" class="px-4 py-5 sm:w-full sm:p-6 bg-white dark:bg-gray-600 shadow sm:rounded-lg">
+            <div x-screen="isMobile = ($width < 1024)" class="px-4 py-5 sm:w-full sm:p-6 bg-white dark:bg-gray-600 shadow sm:rounded-lg">
                 <span x-on:click="showTable = ! showTable" class="cursor-pointer"><i x-bind:class="{ 'fa-rotate-180': !showTable }" class="fa-solid fa-chevron-up fa-border hover:bg-gray-600 dark:hover:bg-gray-400" style="color: lightgray; --fa-border-padding: .25em; --fa-border-radius: 25%; --fa-border-width: .15em;"></i></span>
                 <span class="text-sm text-gray-400 dark:text-gray-200 font-bold uppercase px-2">{{ __('Table') }}</span>
                 <span x-show="votes.length > 0"><i class="fa-solid fa-table text-sm text-gray-400 dark:text-gray-200"></i></span>
