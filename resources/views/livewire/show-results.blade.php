@@ -307,7 +307,7 @@
         
         <!-- Table Section -->
         <div class="mt-5 md:mt-5">
-            <div class="px-4 py-5 sm:w-full sm:p-6 bg-white dark:bg-gray-600 shadow sm:rounded-lg">
+            <div x-screen="showTable = ($width < 1024)" class="px-4 py-5 sm:w-full sm:p-6 bg-white dark:bg-gray-600 shadow sm:rounded-lg">
                 <span x-on:click="showTable = ! showTable" class="cursor-pointer"><i x-bind:class="{ 'fa-rotate-180': !showTable }" class="fa-solid fa-chevron-up fa-border hover:bg-gray-600 dark:hover:bg-gray-400" style="color: lightgray; --fa-border-padding: .25em; --fa-border-radius: 25%; --fa-border-width: .15em;"></i></span>
                 <span class="text-sm text-gray-400 dark:text-gray-200 font-bold uppercase px-2">{{ __('Table') }}</span>
                 <span x-show="votes.length > 0"><i class="fa-solid fa-table text-sm text-gray-400 dark:text-gray-200"></i></span>
@@ -319,7 +319,7 @@
                         <x-slot name="head">
                             <x-table.heading class="hidden lg:table-cell w-2/12">#</x-table.heading>
                             <x-table.heading class="w-8/12">{{ __('Vote text') }}</x-table.heading>
-                            <x-table.heading class="w-2/12">{{ __('# of votes') }}</x-table.heading>
+                            <x-table.heading class="w-auto">{{ __('# of votes') }}</x-table.heading>
                         </x-slot>
                         <x-slot name="body">
 
