@@ -25,6 +25,7 @@ class ShowQuestions extends Component
         try {
             $this->login();
         } catch (\Exception $e) {
+            abort($e->getCode(), $e->getMessage());
             $this->error_message = $this->parseErrorMessage($e->getMessage());
         }
     }
