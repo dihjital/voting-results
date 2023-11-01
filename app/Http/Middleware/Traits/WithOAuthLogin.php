@@ -24,7 +24,7 @@ trait WithOAuthLogin
         $this->api_user = env('API_USER');
         $this->api_secret = env('API_SECRET');
 
-        $this->api_endpoint = config('services.passport.login_endpoint', 'https://voting-api.votes365.org/v1/oauth/token');
+        $this->api_endpoint = env('PASSPORT_LOGIN_ENDPOINT');
 
         $this->client_id = env('PASSPORT_CLIENT_ID');
         $this->client_secret = env('PASSPORT_CLIENT_SECRET');
@@ -186,16 +186,14 @@ trait WithOAuthLogin
             throw new \Exception($response->body(), $response->status());
         }
 
-        if ($response['valid'] === true) {
-            return true;
+        if ($response['valid'] !== true) {
+            Log::debug('Access token is no longer valid.');
+
+            $this->deleteTokensFromCache();
+            $this->deleteTokensFromSession();
         }
 
-        Log::debug('Access token is no longer valid.');
-
-        $this->deleteTokensFromCache();
-        $this->deleteTokensFromSession();
-
-        return false;
+        return true;
     }
 
     protected function getNewTokensFromApi(): array
