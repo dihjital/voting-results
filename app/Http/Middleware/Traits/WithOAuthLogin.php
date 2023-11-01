@@ -31,7 +31,7 @@ trait WithOAuthLogin
 
         // TODO: For some reason the session variables are not set when a new token is requested from the back-end
         // This is only a work-around until we find the right solution
-        $this->deleteTokensFromSession();
+        // $this->deleteTokensFromSession();
     }
 
     protected function checkHalfTime($issued_at, $expires_in): bool
@@ -55,7 +55,7 @@ trait WithOAuthLogin
 
     protected function storeTokensInSession($access_token, $refresh_token): void
     {
-        $this->deleteTokensFromSession();
+        // $this->deleteTokensFromSession();
 
         Session::put('access_token', $access_token);
         Session::put('refresh_token', $refresh_token);
@@ -90,8 +90,8 @@ trait WithOAuthLogin
 
     protected function storeTokensInCache($access_token, $refresh_token, $expires_in): void
     {
-        $this->deleteTokensFromSession();
-        $this->deleteTokensFromCache();
+        // $this->deleteTokensFromSession();
+        // $this->deleteTokensFromCache();
 
         Cache::put('access_token', $access_token);
         Cache::put('refresh_token', $refresh_token);
