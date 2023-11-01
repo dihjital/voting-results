@@ -180,9 +180,18 @@ trait WithOAuthLogin
             throw new \Exception($response->body(), $response->status());
         }
 
+        Log::debug('Validating token data: '.print_r($tokens, true));
+
         if ($response['valid'] === true) {
-            $this->storeTokensInSession($tokens['access_token'], $tokens['refresh_token']);
-            $this->storeTokensInCache($tokens['access_token'], $tokens['refresh_token'], $tokens['expires_in']);
+            $this->storeTokensInSession(
+                $tokens['access_token'], 
+                $tokens['refresh_token'],
+            );
+            $this->storeTokensInCache(
+                $tokens['access_token'], 
+                $tokens['refresh_token'], 
+                $tokens['expires_in'],
+            );
             return true;
         }
 
