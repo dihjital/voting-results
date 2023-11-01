@@ -160,6 +160,7 @@ trait WithOAuthLogin
                         return [$access_token, $refresh_token];
                     }
                 } else {
+                    $this->storeTokensInSession($access_token, $refresh_token);
                     Log::debug('Returning tokens from cache for further validation');
                 }
             }
@@ -186,15 +187,6 @@ trait WithOAuthLogin
         }
 
         if ($response['valid'] === true) {
-            $this->storeTokensInSession(
-                $tokens['access_token'], 
-                $tokens['refresh_token'],
-            );
-            $this->storeTokensInCache(
-                $tokens['access_token'], 
-                $tokens['refresh_token'], 
-                $tokens['expires_in'],
-            );
             return true;
         }
 
