@@ -26,7 +26,7 @@ class ShowQuestions extends Component
         try {
             $this->login();
         } catch (\Exception $e) {
-            Log::debug('Login failed with: '.$e->getMessage());
+            Log::error('Login failed with: '.$e->getMessage());
             $this->error_message = $this->parseErrorMessage($e->getMessage());
         }
     }
