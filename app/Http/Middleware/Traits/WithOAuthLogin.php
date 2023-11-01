@@ -130,35 +130,63 @@ trait WithOAuthLogin
         return count(array_filter($a, fn($item) => !empty($item)));
     }
 
-    protected function login(): array 
+    public function login(): array 
     {
         $tokens = $this->getTokensFromSession();
-        if (self::numberOfNonEmptyElements($tokens) === 2) {
-            Log::debug('Returning tokens from session');
-            return $tokens;
-        }
 
-        // TODO: We might need to store the tokens in the cache per user ...
-        $tokens = $this->getTokensFromCache();
-        if (self::numberOfNonEmptyElements($tokens) === 4) {
-            list($access_token, $refresh_token, $issued_at, $expires_in) = $tokens;
-            // We are over half time so refresh tokens ...
-            if ($this->checkHalfTime($issued_at, $expires_in)) {
-                $tokens = $this->refreshToken($refresh_token);
-                if (self::numberOfNonEmptyElements($tokens) === 3) {
-                    list($access_token, $refresh_token, $expires_in) = $tokens;
-                    $this->storeTokensInSession($access_token, $refresh_token);
-                    $this->storeTokensInCache($access_token, $refresh_token, $expires_in);
-                    Log::debug('Returning tokens after re-fresh from the back-end');
-                    return [$access_token, $refresh_token];
+        if (self::numberOfNonEmptyElements($tokens) !== 2) {
+            $tokens = $this->getTokensFromCache();
+            if (self::numberOfNonEmptyElements($tokens) === 4) {
+                list($access_token, $refresh_token, $issued_at, $expires_in) = $tokens;
+                // We are over half time so refresh tokens ...
+                if ($this->checkHalfTime($issued_at, $expires_in)) {
+                    $tokens = $this->refreshToken($refresh_token);
+                    if (self::numberOfNonEmptyElements($tokens) === 3) {
+                        list($access_token, $refresh_token, $expires_in) = $tokens;
+                        $this->storeTokensInSession($access_token, $refresh_token);
+                        $this->storeTokensInCache($access_token, $refresh_token, $expires_in);
+                        Log::debug('Returning tokens after re-freshing them from the back-end');
+                        return [$access_token, $refresh_token];
+                    }
+                } else {
+                    Log::debug('Returning tokens from cache for further validation');
                 }
-            } else {
-                $this->storeTokensInSession($access_token, $refresh_token);
-                Log::debug('Returning tokens from cache');
-                return [$access_token, $refresh_token];
             }
         }
 
+        return $this->areTokensValid($tokens)
+            ? $tokens
+            : $this->getNewTokensFromApi();
+    }
+
+    protected function areTokensValid(array $tokens): bool
+    {
+        if (array_key_exists('access_token', $tokens)) return false;
+
+        $response = Http::withToken($tokens['access_token'])
+            ->get($this->api_endpoint.'/validate');
+
+        if (!$response->ok()) {
+            Log::error($response->body());
+            throw new \Exception($response->body(), $response->status());
+        }
+
+        if ($response['valid'] === true) {
+            $this->storeTokensInSession(...$tokens);
+            $this->storeTokensInCache(...$tokens);
+            return true;
+        }
+
+        Log::debug('Access token is no longer valid.');
+
+        $this->deleteTokensFromCache();
+        $this->deleteTokensFromSession();
+
+        return false;
+    }
+
+    protected function getNewTokensFromApi(): array
+    {
         // Tokens are not stored in session neither in cache so we have to log in ...
         $response = Http::asForm()->post(self::getURL().'/login', [
             'email'     => $this->api_user,
@@ -182,5 +210,4 @@ trait WithOAuthLogin
         Log::debug('Returning tokens from the back-end');
         return [$access_token, $refresh_token];
     }
-
 }
