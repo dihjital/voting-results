@@ -9,6 +9,7 @@ use App\Http\Livewire\Traits\WithPerPagePagination;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 use Livewire\Component;
 
@@ -25,7 +26,7 @@ class ShowQuestions extends Component
         try {
             $this->login();
         } catch (\Exception $e) {
-            abort($e->getCode(), $e->getMessage());
+            Log::debug('Login failed with: '.$e->getMessage());
             $this->error_message = $this->parseErrorMessage($e->getMessage());
         }
     }
