@@ -44,8 +44,8 @@ trait WithOAuthLogin
     protected function getTokensFromSession(): array
     {
         return [
-            Session::get('access_token'),
-            Session::get('refresh_token'),
+            'access_token' => Session::get('access_token'),
+            'refresh_token' => Session::get('refresh_token'),
         ];
     }
 
@@ -72,10 +72,10 @@ trait WithOAuthLogin
             Cache::has('issued_at') &&
             Cache::has('expires_in')) {
                 return [
-                    Cache::get('access_token'),
-                    Cache::get('refresh_token'),
-                    Cache::get('issued_at'),
-                    Cache::get('expires_in'),
+                    'access_token' => Cache::get('access_token'),
+                    'refresh_token' => Cache::get('refresh_token'),
+                    'issued_at' => Cache::get('issued_at'),
+                    'expires_in' => Cache::get('expires_in'),
                 ];
         }
 
@@ -113,9 +113,9 @@ trait WithOAuthLogin
 
         if ($response->ok()) {
             return [
-                $response['access_token'], 
-                $response['refresh_token'], 
-                $response['expires_in']
+                'access_token' => $response['access_token'], 
+                'refresh_token' => $response['refresh_token'], 
+                'expires_in' => $response['expires_in'],
             ];
         }
 
@@ -137,12 +137,17 @@ trait WithOAuthLogin
         if (self::numberOfNonEmptyElements($tokens) !== 2) {
             $tokens = $this->getTokensFromCache();
             if (self::numberOfNonEmptyElements($tokens) === 4) {
-                list($access_token, $refresh_token, $issued_at, $expires_in) = $tokens;
+                list('access_token' => $access_token, 
+                    'refresh_token' => $refresh_token, 
+                    'issued_at' => $issued_at, 
+                    'expires_in' => $expires_in) = $tokens;
                 // We are over half time so refresh tokens ...
                 if ($this->checkHalfTime($issued_at, $expires_in)) {
                     $tokens = $this->refreshToken($refresh_token);
                     if (self::numberOfNonEmptyElements($tokens) === 3) {
-                        list($access_token, $refresh_token, $expires_in) = $tokens;
+                        list('access_token' => $access_token, 
+                            'refresh_token' => $refresh_token, 
+                            'expires_in' => $expires_in) = $tokens;
                         $this->storeTokensInSession($access_token, $refresh_token);
                         $this->storeTokensInCache($access_token, $refresh_token, $expires_in);
                         Log::debug('Returning tokens after re-freshing them from the back-end');
