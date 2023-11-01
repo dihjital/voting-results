@@ -164,7 +164,10 @@ trait WithOAuthLogin
         }
 
         return $this->areTokensValid($tokens)
-            ? $tokens
+            ? [
+                $tokens['access_token'],
+                $tokens['refresh_token'],
+            ]
             : $this->getNewTokensFromApi();
     }
 
@@ -185,13 +188,11 @@ trait WithOAuthLogin
                 $tokens['access_token'], 
                 $tokens['refresh_token'],
             );
-            Log::debug('storeTokensInSession successful');
             $this->storeTokensInCache(
                 $tokens['access_token'], 
                 $tokens['refresh_token'], 
                 $tokens['expires_in'],
             );
-            Log::debug('storeTokensInCache successful');
             return true;
         }
 
