@@ -44,15 +44,13 @@ trait WithOAuthLogin
     protected function getTokensFromSession(): array
     {
         return [
-            'access_token' => session()->get('access_token'),
-            'refresh_token' => session()->get('refresh_token'),
+            'access_token' => request()->session()->get('access_token'),
+            'refresh_token' => request()->session()->get('refresh_token'),
         ];
     }
 
     protected function storeTokensInSession($access_token, $refresh_token): void
     {
-        // $this->deleteTokensFromSession();
-
         Session::put('access_token', $access_token);
         Session::put('refresh_token', $refresh_token);
     }
@@ -84,9 +82,6 @@ trait WithOAuthLogin
 
     protected function storeTokensInCache($access_token, $refresh_token, $expires_in): void
     {
-        // $this->deleteTokensFromSession();
-        // $this->deleteTokensFromCache();
-
         Cache::put('access_token', $access_token);
         Cache::put('refresh_token', $refresh_token);
         Cache::put('issued_at', Carbon::now());
