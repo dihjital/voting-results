@@ -59,6 +59,8 @@ trait WithOAuthLogin
 
         Session::put('access_token', $access_token);
         Session::put('refresh_token', $refresh_token);
+
+        Log::debug('storeTokensInSession are successful');
     }
 
     protected function deleteTokensFromSession(): void
