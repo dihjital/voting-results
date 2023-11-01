@@ -169,7 +169,7 @@ trait WithOAuthLogin
         if (!array_key_exists('access_token', $tokens)) return false;
 
         $response = Http::withToken($tokens['access_token'])
-            ->get($this->api_endpoint.'/validate');
+            ->get(self::getURL().'/validate');
 
         if (!$response->ok()) {
             Log::error($response->body());
