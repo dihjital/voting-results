@@ -181,8 +181,8 @@ trait WithOAuthLogin
         }
 
         if ($response['valid'] === true) {
-            $this->storeTokensInSession(...$tokens);
-            $this->storeTokensInCache(...$tokens);
+            $this->storeTokensInSession($tokens['access_token'], $tokens['refresh_token']);
+            $this->storeTokensInCache($tokens['access_token'], $tokens['refresh_token'], $tokens['expires_ind']);
             return true;
         }
 
