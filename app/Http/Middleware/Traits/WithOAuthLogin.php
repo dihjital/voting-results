@@ -161,7 +161,7 @@ trait WithOAuthLogin
 
     protected function areTokensValid(array $tokens): bool
     {
-        if (array_key_exists('access_token', $tokens)) return false;
+        if (!array_key_exists('access_token', $tokens)) return false;
 
         $response = Http::withToken($tokens['access_token'])
             ->get($this->api_endpoint.'/validate');
