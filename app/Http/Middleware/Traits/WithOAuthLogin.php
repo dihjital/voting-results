@@ -28,10 +28,6 @@ trait WithOAuthLogin
 
         $this->client_id = env('PASSPORT_CLIENT_ID');
         $this->client_secret = env('PASSPORT_CLIENT_SECRET');
-
-        // TODO: For some reason the session variables are not set when a new token is requested from the back-end
-        // This is only a work-around until we find the right solution
-        // $this->deleteTokensFromSession();
     }
 
     protected function checkHalfTime($issued_at, $expires_in): bool
@@ -59,8 +55,6 @@ trait WithOAuthLogin
 
         Session::put('access_token', $access_token);
         Session::put('refresh_token', $refresh_token);
-
-        Log::debug('storeTokensInSession are successful');
     }
 
     protected function deleteTokensFromSession(): void
@@ -139,6 +133,8 @@ trait WithOAuthLogin
     public function login(): array 
     {
         $tokens = $this->getTokensFromSession();
+
+        Log::debug('Tokens retrieved from session: '.print_r($tokens, true));
 
         if (self::numberOfNonEmptyElements($tokens) !== 2) {
             $tokens = $this->getTokensFromCache();
