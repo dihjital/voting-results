@@ -14,6 +14,8 @@ trait WithOAuthLogin
     protected $api_user;
     protected $api_secret;
 
+    protected $api_endpoint;
+
     protected $client_id;
     protected $client_secret;
 
@@ -21,6 +23,8 @@ trait WithOAuthLogin
     {
         $this->api_user = env('API_USER');
         $this->api_secret = env('API_SECRET');
+
+        $this->api_endpoint = config('services.passport.login_endpoint', 'https://voting-api.votes365.org/v1/oauth/token');
 
         $this->client_id = env('PASSPORT_CLIENT_ID');
         $this->client_secret = env('PASSPORT_CLIENT_SECRET');
@@ -141,7 +145,7 @@ trait WithOAuthLogin
                     'refresh_token' => $refresh_token, 
                     'issued_at' => $issued_at, 
                     'expires_in' => $expires_in) = $tokens;
-                // We are over half time so refresh tokens ...
+                // We are over half time so let us try to refresh our tokens ...
                 if ($this->checkHalfTime($issued_at, $expires_in)) {
                     $tokens = $this->refreshToken($refresh_token);
                     if (self::numberOfNonEmptyElements($tokens) === 3) {
@@ -169,7 +173,7 @@ trait WithOAuthLogin
         if (!array_key_exists('access_token', $tokens)) return false;
 
         $response = Http::withToken($tokens['access_token'])
-            ->get(self::getURL().'/validate');
+            ->get($this->api_endpoint.'/validate');
 
         if (!$response->ok()) {
             Log::error($response->body());
