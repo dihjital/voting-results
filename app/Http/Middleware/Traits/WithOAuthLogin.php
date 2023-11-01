@@ -44,8 +44,8 @@ trait WithOAuthLogin
     protected function getTokensFromSession(): array
     {
         return [
-            'access_token' => request()->session()->get('access_token'),
-            'refresh_token' => request()->session()->get('refresh_token'),
+            'access_token' => Session::get('access_token'),
+            'refresh_token' => Session::get('refresh_token'),
         ];
     }
 
