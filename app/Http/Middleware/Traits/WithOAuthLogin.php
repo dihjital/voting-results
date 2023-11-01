@@ -108,7 +108,7 @@ trait WithOAuthLogin
             'refresh_token' => $refresh_token,
             'client_id' => $this->client_id,
             'client_secret' => $this->client_secret,
-            'scope' => 'list-questions list-votes',
+            'scope' => 'list-quizzes list-questions list-votes',
         ]);
 
         if ($response->ok()) {
