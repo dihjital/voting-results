@@ -5,28 +5,32 @@ namespace App\Http\Livewire;
 use App\Http\Livewire\Traits\WithLogin;
 use App\Http\Livewire\Traits\WithErrorMessage;
 use App\Http\Livewire\Traits\WithPerPagePagination;
+use App\Http\Livewire\Traits\WithUUIDSession;
 
 use Illuminate\Pagination\LengthAwarePaginator;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
+use Illuminate\Http\Client\PendingRequest;
+
 use Livewire\Component;
 
 class ShowQuestions extends Component
 {
-    use WithLogin, WithPerPagePagination, WithErrorMessage;
+    use WithLogin, WithUUIDSession, WithPerPagePagination, WithErrorMessage;
 
     const URL = 'http://localhost:8000';
     const PAGINATING = TRUE;
 
     public function mount()
     {
-        // Check if the application has logged in to the API back-end successfully ...
         try {
-            $this->login();
+            list(
+                'access_token' => $this->access_token, 
+                'refresh_token' => $this->refresh_token) = $this->getTokensFromCache();
+            $this->session_id = $this->startSessionIfRequired($this->access_token);
         } catch (\Exception $e) {
-            Log::error('Login failed with: '.$e->getMessage());
             $this->error_message = $this->parseErrorMessage($e->getMessage());
         }
     }
@@ -49,9 +53,12 @@ class ShowQuestions extends Component
             $response = Http::withToken($this->access_token)
                 ->withHeaders([
                     'session-id' => $this->session_id
-                ])->get($url, array_filter([
+                ])
+                ->retry(3, 500, function (\Exception $e, PendingRequest $request) {
+                    return $this->retryCallback($e, $request);
+                }) 
+                ->get($url, array_filter([
                     'page' => self::getPAGINATING() ? $page ?? request('page', 1) : '',
-                    // 'user_id' => Auth::id(), // Until this becomes mandatory at the back-end
                 ]))
                 ->throwUnlessStatus(200);
            

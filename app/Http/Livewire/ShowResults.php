@@ -13,15 +13,18 @@ use Illuminate\Support\Facades\Auth;
 use App\Exports\VotesExport;
 use Maatwebsite\Excel\Facades\Excel;
 
-use App\Http\Livewire\Traits\WithErrorMessage;
 use App\Http\Livewire\Traits\WithLogin;
+use App\Http\Livewire\Traits\WithUUIDSession;
+use App\Http\Livewire\Traits\WithErrorMessage;
+
+use Illuminate\Http\Client\PendingRequest;
 
 use App\Mail\EmailVotingResults;
 use Laravel\Jetstream\InteractsWithBanner;
 
 class ShowResults extends Component
 {
-    use InteractsWithBanner, WithLogin, WithErrorMessage;
+    use InteractsWithBanner, WithLogin, WithUUIDSession, WithErrorMessage;
 
     public $question;
 
@@ -54,9 +57,11 @@ class ShowResults extends Component
     {
         $this->question_id = $question_id;
 
-        // Check if the application has logged in to the API back-end successfully ...
         try {
-            $this->login();
+            list(
+                'access_token' => $this->access_token, 
+                'refresh_token' => $this->refresh_token) = $this->getTokensFromCache();
+            $this->session_id = $this->startSessionIfRequired($this->access_token);
 
             // Get the question text ...
             try {
@@ -66,6 +71,9 @@ class ShowResults extends Component
                     ->withHeaders([
                         'session-id' => $this->session_id,
                     ])
+                    ->retry(3, 500, function (\Exception $e, PendingRequest $request) {
+                        return $this->retryCallback($e, $request);
+                    })
                     ->get($url)
                     ->throwUnlessStatus(200)
                     ->json();
@@ -126,6 +134,9 @@ class ShowResults extends Component
                 ->withHeaders([
                     'session-id' => $this->session_id,
                 ])
+                ->retry(3, 500, function (\Exception $e, PendingRequest $request) {
+                    return $this->retryCallback($e, $request);
+                })
                 ->get($url)
                 ->throwUnlessStatus(200)
                 ->json();
@@ -154,6 +165,9 @@ class ShowResults extends Component
                 ->withHeaders([
                     'session-id' => $this->session_id,
                 ])
+                ->retry(3, 500, function (\Exception $e, PendingRequest $request) {
+                    return $this->retryCallback($e, $request);
+                })
                 ->get($url)
                 ->throwUnlessStatus(200)
                 ->json();

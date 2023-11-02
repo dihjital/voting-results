@@ -14,10 +14,7 @@ use Illuminate\Support\Facades\Auth;
 |
 */
 
-// Auth::loginUsingId(1, $remember = true);
-
 Route::get('/', function () {
-    // return view('welcome');
     return redirect()->route('questions');
 });
 
@@ -25,12 +22,11 @@ Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
     'verified',
-    'backend.login', // Get the access_token and the session_id from the back-end for the currently logged in user ...
 ])->group(function () {
     Route::get('/dashboard', function () {
-        // return view('dashboard');
         return redirect()->route('questions');
     })->name('dashboard');
+
     Route::get('/questions', function () {
         return view('list-all-questions');
     })->name('questions');
