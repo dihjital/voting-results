@@ -5,7 +5,7 @@
     @else
     <x-table>
         <x-slot name="head">
-            <x-table.heading class="hidden lg:table-cell w-auto"></x-table.heading>
+            <x-table.heading class="hidden md:table-cell w-auto"></x-table.heading>
             <x-table.heading class="w-8/12">{{ __('Question text') }}</x-table.heading>
             <x-table.heading class="hidden lg:table-cell w-auto">{{ __('# of answers') }}</x-table.heading>
             <x-table.heading class="hidden lg:table-cell w-auto">{{ __('Last voting') }}</x-table.heading>
@@ -19,7 +19,7 @@
                     "bg-gray-200 dark:bg-gray-400" => $q['is_closed'],
                 ])
             >
-                <x-table.cell class="hidden lg:table-cell">
+                <x-table.cell class="hidden md:table-cell">
                     @if($q['is_closed'])
                         <i class="fa-solid fa-lock text-gray-600 dark:text-gray-500"></i>
                     @endif
