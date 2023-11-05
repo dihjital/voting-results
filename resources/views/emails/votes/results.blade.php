@@ -1,7 +1,14 @@
 @component('mail::message')
 {{ __('You have been receiving the voting results for _":questionText"_ question!', ['questionText' => $questionText]) }}
 
-![Voting result chart](https://quickchart.io/chart/render/zm-63e662c8-2be4-4426-9105-cbcd414ea1af?title=Mi volt Péter jele az oviban?&labels=Pöttyös labda,Talicska,vagy fésű?&data1=8,4,7 "Voting results chart")
+<img src="data:image/png; base64, {{ 
+    base64_encode(
+        file_get_contents('https://quickchart.io/chart/render/zm-63e662c8-2be4-4426-9105-cbcd414ea1af?title=' . 
+            urlencode('Mi volt Péter jele az oviban') . 
+            '?&labels=' . 
+            urlencode('Pöttyös labda,Talicska,vagy fésű?') . 
+            '&data1=8,4,7')) }}" 
+/>
 
 @component('mail::table')
 | #     | VOTE TEXT | # OF VOTES |
