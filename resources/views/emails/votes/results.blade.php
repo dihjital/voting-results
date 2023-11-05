@@ -1,10 +1,6 @@
 @component('mail::message')
 {{ __('You have been receiving the voting results for _":questionText"_ question!', ['questionText' => $questionText]) }}
 
-@component('mail::panel')
-{{ __('This is a simple test message here.') }}
-@endcomponent
-
 @component('mail::table')
 | #     | VOTE TEXT | # OF VOTES |
 | :---- | :-------- | :--------: |
@@ -13,7 +9,7 @@
 @endforeach
 @endcomponent
 
-{{ __('If you would like to check out the voting results on the Web site please click on the button below:') }}
+{{ __('Is this gets modified at all? If you would like to check out the voting results on the Web site please click on the button below:') }}
 
 @component('mail::button', ['url' => $resultsUrl])
 {{ __('Check out the results') }}
