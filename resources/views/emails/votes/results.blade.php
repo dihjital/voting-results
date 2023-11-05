@@ -7,11 +7,7 @@
         implode(',', 
             array_map(
                 fn($r) => 
-                    urlencode(
-                        strlen($r['vote_text']) > 10 
-                            ? substr($r['vote_text'], 0, 10) . '...' 
-                            : $r['vote_text']
-                    ),
+                    urlencode('#' . $r['id']),
                 $voteResults
             )
         )
