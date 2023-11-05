@@ -1,8 +1,7 @@
 @component('mail::message')
 {{ __('You have been receiving the voting results for _":questionText"_ question!', ['questionText' => $questionText]) }}
 
-<img src="https://quickchart.io/chart/render/zm-63e662c8-2be4-4426-9105-cbcd414ea1af?title=
-    {{ urlencode($questionText) }}
+<img src="https://quickchart.io/chart/render/zm-a675233a-1e7e-4d96-8915-0a65c79b533a
     &labels={{ implode(',', array_map(fn($r) => urlencode($r['vote_text']), $voteResults)) }}
     &data1={{ implode(',', array_map(fn($r) => $r['number_of_votes'], $voteResults)) }}"
 />
