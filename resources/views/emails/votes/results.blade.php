@@ -1,17 +1,10 @@
 @component('mail::message')
 {{ __('You have been receiving the voting results for _":questionText"_ question!', ['questionText' => $questionText]) }}
 
-<img 
-    src="data:image/png; base64,{{ 
-        base64_encode(
-            file_get_contents(
-                'https://quickchart.io/chart/render/zm-63e662c8-2be4-4426-9105-cbcd414ea1af?title=' . 
-                urlencode($questionText) .
-                '&labels=' . implode(',', array_map(fn($r) => urlencode($r['vote_text']), $voteResults)) .
-                '&data1=' . implode(',', array_map(fn($r) => $r['number_of_votes'], $voteResults)) 
-            )
-        )
-    }}"
+<img src="https://quickchart.io/chart/render/zm-63e662c8-2be4-4426-9105-cbcd414ea1af?title=
+    {{ urlencode($questionText) }}
+    &labels={{ implode(',', array_map(fn($r) => urlencode($r['vote_text']), $voteResults)) }}
+    &data1={{ implode(',', array_map(fn($r) => $r['number_of_votes'], $voteResults)) }}"
 />
 
 @component('mail::table')
