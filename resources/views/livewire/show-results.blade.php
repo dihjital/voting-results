@@ -112,7 +112,11 @@
                 const x = chart.config.options.scales.x;
                 const y = chart.config.options.scales.y;
 
-                if (darkMode === 'dark') {
+                const colorTheme = localStorage.getItem('color-theme')
+                    ? localStorage.getItem('color-theme')
+                    : 'dark'; 
+
+                if (colorTheme === 'dark') {
                     Chart.defaults.color = 'white';
                     chart.config.data.datasets[0].backgroundColor = '#FDE68A'; // yellow-200
                     x.ticks.color = y.ticks.color = 'lightgray';
@@ -220,7 +224,7 @@
             }
 
             // Listeners
-            document.getElementById('themeSelectorButton').addEventListener('click', () => {
+            document.getElementById('theme-toggle').addEventListener('click', () => {
                 changeChartColorScheme();
             });
 

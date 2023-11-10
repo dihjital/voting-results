@@ -17,7 +17,7 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
-	<script>
+	    <script>
             // It's best to inline this in `head` to avoid FOUC (flash of unstyled content) when changing pages or themes
             if (
               localStorage.getItem('color-theme') === 'dark' ||
@@ -58,7 +58,7 @@
             </main>
         </div>
 
-	@push('scripts')
+	    @push('scripts')
         <script>
             var themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
             var themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
