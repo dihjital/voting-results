@@ -520,7 +520,7 @@
                         token: currentToken,
                     };
 
-                    fetch("{{ self::getURL() }}/subscribe", {
+                    fetch("{{ config('services.api.endpoint') }}/subscribe", {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json"
@@ -631,7 +631,7 @@
                             user: '{{ Auth::id() }}',
                         };
                         
-                        fetch("{{ self::getURL() }}/unsubscribe", {
+                        fetch("{{ config('services.api.endpoint') }}/unsubscribe", {
                             method: "DELETE",
                             headers: {
                                 "Content-Type": "application/json"

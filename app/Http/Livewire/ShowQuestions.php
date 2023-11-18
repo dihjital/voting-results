@@ -20,7 +20,6 @@ class ShowQuestions extends Component
 {
     use WithLogin, WithUUIDSession, WithPerPagePagination, WithErrorMessage;
 
-    const URL = 'http://localhost:8000';
     const PAGINATING = TRUE;
 
     public function mount()
@@ -35,11 +34,6 @@ class ShowQuestions extends Component
         }
     }
 
-    public static function getURL()
-    {
-        return env('API_ENDPOINT', self::URL);
-    }
-
     public static function getPAGINATING(): bool
     {
         return self::PAGINATING;
@@ -48,7 +42,9 @@ class ShowQuestions extends Component
     public function fetchData($page = null)
     {
         try {
-            $url = self::getURL().'/questions';
+            $url = config('services.api.endpoint',
+                fn() => throw new \Exception('No API endpoint is defined')
+            ).'/questions';
 
             $response = Http::withToken($this->access_token)
                 ->withHeaders([
@@ -58,8 +54,9 @@ class ShowQuestions extends Component
                     return $this->retryCallback($e, $request);
                 }) 
                 ->get($url, array_filter([
-                    'page' => self::getPAGINATING() ? $page ?? request('page', 1) : '',
-                ]))
+                        'page' => self::getPAGINATING() ? $page ?? request('page', 1) : '',
+                    ])
+                )
                 ->throwUnlessStatus(200);
            
             $data = $response->json();

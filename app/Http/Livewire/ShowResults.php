@@ -51,8 +51,6 @@ class ShowResults extends Component
         'refresh-page'  => '$refresh',
     ];
 
-    const URL = 'http://localhost:8000';
-
     public function mount($question_id)
     {
         $this->question_id = $question_id;
@@ -65,7 +63,9 @@ class ShowResults extends Component
 
             // Get the question text ...
             try {
-                $url = self::getURL().'/questions/'.$this->question_id;
+                $url = $url = config('services.api.endpoint',
+                    fn() => throw new \Exception('No API endpoint is defined')
+                ).'/questions/'.$this->question_id;
                 
                 $response = Http::withToken($this->access_token)
                     ->withHeaders([
@@ -103,11 +103,6 @@ class ShowResults extends Component
         session()->put($this->question_id.':showMap', $this->showMap);
     }
 
-    public static function getURL()
-    {
-        return env('API_ENDPOINT', self::URL);
-    }
-
     public function requestPermission()
     {
         $this->emit('request-permission');
@@ -128,7 +123,9 @@ class ShowResults extends Component
     public function fetchData(): void
     {
         try {
-            $url = self::getURL().'/questions/'.$this->question_id.'/votes';
+            $url = $url = config('services.api.endpoint',
+                fn() => throw new \Exception('No API endpoint is defined')
+            ).'/questions/'.$this->question_id.'/votes';
             
             $response = Http::withToken($this->access_token)
                 ->withHeaders([
@@ -158,7 +155,9 @@ class ShowResults extends Component
     public function fetchLocations(): void
     {
         try {
-            $url = self::getURL().'/questions/'.$this->question_id.'/votes/locations';
+            $url = config('services.api.endpoint',
+                fn() => throw new \Exception('No API endpoint is defined')
+            ).'/questions/'.$this->question_id.'/votes/locations';
 
             // TODO: If response is empty then handle it at the client side ...
             $this->locations = Http::withToken($this->access_token)

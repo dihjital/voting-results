@@ -48,19 +48,44 @@ trait WithUUIDSession
         session()->put($this->session_key, $session_id);
     }
 
+    public function deleteSession()
+    {
+        Log::debug('Deleting session_id: '.$this->session_id);
+        try {
+            // TODO: Add a retry callback here as well
+            Http::withToken($this->access_token)
+                ->delete(
+                    config('services.api.endpoint',
+                        fn() => throw new \Exception('No API endpoint is defined')
+                    )
+                    .'/session/'.$this->session_id
+                )
+                ->throwUnlessStatus(200);
+        } catch (\Exception $e) {
+            Log::debug('Tried to delete session_id but failed: '.$this->session_id);
+            Log::error('deleteSession: '.$e->getMessage());
+        }
+
+        unset($session_id);
+        $this->deleteSessionId();
+    }
+
     protected function requestNewSessionId($access_token, $user_id = '')
     {
         $response = Http::withToken($access_token)
             ->retry(3, 500, function (\Exception $e, PendingRequest $request) {
                 if (! $e instanceof RequestException || !in_array($e->response->status(), [401, 403])) {
-                    Log::debug('Request failed with status code: '.$e->response->status());
+                    Log::debug('requestNewSessionId: Request failed with status code: '.$e->response->status());
                     return false;
                 }
             
-                Log::debug('Request retry in progress');
+                Log::debug('requestNewSessionId: Request retry in progress ...');
             
                 if ($this->isTokenValid($this->access_token)) {
-                    return false;
+                    // Make sure we use a valid token ...
+                    $request->withToken($this->access_token);
+
+                    return true; // If true then it will retry again ...
                 }
             
                 $this->getNewTokenFromApi();
@@ -70,9 +95,12 @@ trait WithUUIDSession
             
                 return true;
             })
-            ->post(self::getURL().'/session', [
-                'user_id' => $user_id ?: Auth::id(),
-            ])
+            ->post(
+                config('services.api.endpoint',
+                        fn() => throw new \Exception('No API endpoint is defined')
+                ).'/session', 
+                ['user_id' => $user_id ?: Auth::id(),]
+            )
             ->throwUnlessStatus(200);
 
         $this->setSessionId($response->json()['session_id']);
