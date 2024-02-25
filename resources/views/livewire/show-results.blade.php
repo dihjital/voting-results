@@ -316,8 +316,8 @@
             </div>
         </div>
        
-        <!-- Table Section -->
-        <div class="mt-5 md:mt-5">
+        <!-- Table Section Only visible on large screens -->
+        <div class="hidden lg:flex mt-5 md:mt-5">
             <div x-screen="isMobile = ($width < 1024)" class="px-4 py-5 sm:w-full sm:p-6 bg-white dark:bg-gray-600 shadow sm:rounded-lg">
                 <span x-on:click="showTable = ! showTable" class="cursor-pointer"><i x-bind:class="{ 'fa-rotate-180': !showTable }" class="fa-solid fa-chevron-up fa-border hover:bg-gray-600 dark:hover:bg-gray-400" style="color: lightgray; --fa-border-padding: .25em; --fa-border-radius: 25%; --fa-border-width: .15em;"></i></span>
                 <span class="text-sm text-gray-400 dark:text-gray-200 font-bold uppercase px-2">{{ __('Table') }}</span>
@@ -373,6 +373,36 @@
                     </x-table>
                 </div>
             </div>
+        </div>
+
+        <!--  Cards Section Only visible on small screens -->
+        <div class="lg:hidden mt-5 md:mt-5">
+            <template x-for="vote in votes" :key="vote.id">
+                <a href="#" class="block max-w-sm p-6 mt-5 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+                    <div class="w-full flex justify-center mb-2 overflow-hidden border-2 border-gray-200 rounded-lg dark:border-gray-700 hover:bg-gray-50"
+                            x-show="vote.image_path">
+                            <img class="
+                                    w-full h-full 
+                                    object-scale-down 
+                                    transition duration-300 ease-in-out 
+                                    hover:scale-125" 
+                                :src="vote.image_url" alt="Thumbnail" />
+                    </div>
+
+                    <i 
+                        class="fa-solid fa-champagne-glasses text-2xl text-gray-400 dark:text-gray-200" 
+                        x-show="vote.number_of_votes != 0 && highestVote == vote.number_of_votes">
+                    </i>
+
+                    <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
+                        x-text="vote.vote_text">
+                    </h5>
+
+                    <p class="font-normal text-gray-700 dark:text-gray-400"
+                        x-text="'{{ __('Number of votes') }}' + ': ' + vote.number_of_votes">
+                    </p>
+                </a>
+            </template>
         </div>
 
         <!-- Map Section. Only visible on large screens -->
