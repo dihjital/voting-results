@@ -5,6 +5,7 @@
 
         voteTexts: @entangle('vote_texts'),
         voteResults: @entangle('vote_results'),
+        highestVote: @entangle('highestVote'),
         questionText: @entangle('question_text'),
 
         votes: @entangle('votes'),
@@ -327,8 +328,8 @@
                     <x-button class="dark:bg-gray-400 ml-1" wire:click="mailVotes" title="{{ __('E-mail results') }}" arial-label="{{ __('E-mail results') }}"><i class="fa-solid fa-envelope fa-sm p-1"></i></x-button>
                     <x-table>
                         <x-slot name="head">
-                            <x-table.heading class="hidden lg:table-cell w-2/12">#</x-table.heading>
-                            <x-table.heading class="w-8/12">{{ __('Vote text') }}</x-table.heading>
+                            <x-table.heading class="hidden lg:table-cell w-auto">{{ __('Visual') }}</x-table.heading>
+                            <x-table.heading class="w-4/12">{{ __('Vote text') }}</x-table.heading>
                             <x-table.heading class="w-auto">{{ __('# of votes') }}</x-table.heading>
                         </x-slot>
                         <x-slot name="body">
@@ -336,13 +337,26 @@
                             <template x-for="vote in votes" :key="vote.id">
                                 <x-table.row wire:loading.class.delay="opacity-75">
                                     <x-table.cell class="hidden lg:table-cell">
-                                        <span class="text-xs" x-text="vote.id"></span>
+                                        <div class="w-64 h-32 lg:w-128 overflow-hidden border-2 border-gray-200 rounded-lg dark:border-gray-700 hover:bg-gray-50"
+                                            x-show="vote.image_path">
+                                            <img class="
+                                                    w-full h-full 
+                                                    object-scale-down 
+                                                    transition duration-300 ease-in-out 
+                                                    hover:scale-125" 
+                                                :src="vote.image_url" alt="Thumbnail" />
+                                        </div>
+                                        <i class="fa-regular fa-image text-sm text-gray-400 dark:text-gray-200" x-show="! vote.image_path"></i>
                                     </x-table.cell>
                                     <x-table.cell>
                                         <span class="text-xs" x-text="vote.vote_text"></span>
                                     </x-table.cell>
                                     <x-table.cell>
-                                        <span class="text-xs" x-text="vote.number_of_votes"></span>
+                                        <span class="text-xs mr-2" x-text="vote.number_of_votes"></span>
+                                        <i 
+                                            class="fa-solid fa-champagne-glasses text-sm text-gray-400 dark:text-gray-200" 
+                                            x-show="vote.number_of_votes != 0 && highestVote == vote.number_of_votes">
+                                        </i>
                                     </x-table.cell>
                                 </x-table.row>
                             </template>

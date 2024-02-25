@@ -27,13 +27,13 @@ class ShowResults extends Component
     use InteractsWithBanner, WithLogin, WithUUIDSession, WithErrorMessage;
 
     public $question;
-
     public $question_id;
     public $question_text;
 
     public $votes;
     public $vote_texts;
     public $vote_results;
+    public $highestVote = 0;
 
     public $locations;
 
@@ -141,6 +141,13 @@ class ShowResults extends Component
             $this->fetchLocations();
 
             $this->votes = $response;
+            $this->highestVote = 
+                array_reduce($this->votes, fn ($highestVote, $vote) =>
+                    $vote['number_of_votes'] > $highestVote
+                        ? $vote['number_of_votes']
+                        : $highestVote, 
+                0);
+
             $this->vote_texts = $this->getVoteTexts($response);
             $this->vote_results = $this->getVoteResults($response) ?: [0]; // Client side can reduce this
             
