@@ -3,7 +3,37 @@
     @if($this->hasErrorMessage())
         <x-error-page code="{{ $this->getStatusCode() }}" message="{{ $this->getErrorMessage() }}"></x-error-page>
     @else
-    <x-table>
+    <!--  Cards Section Only visible on small screens -->
+    <div class="lg:hidden mt-5 md:mt-5">
+        @forelse($questions as $q)
+            <a href="/questions/{{ $q['id'] }}/votes" class="block max-w-sm p-6 mt-5 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+                @if($q['is_closed'])
+                    <i class="fa-solid fa-lock text-2xl text-gray-600 dark:text-gray-500"></i>
+                @endif
+                
+                <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                    {{ $q['question_text'] }}
+                </h5>
+
+                <p class="font-normal text-gray-700 dark:text-gray-400">
+                    {{ __('Number of votes') }}: {{ $q['number_of_votes'] }}
+                </p>
+
+                <p class="font-normal text-gray-700 dark:text-gray-400">
+                    @php
+                        $carbonDate = $q['last_vote_at']
+                            ? \Carbon\Carbon::parse($q['last_vote_at'])
+                            : null; 
+                        $humanReadable = $carbonDate?->diffForHumans();
+                    @endphp
+                    {{ __('Last voted at') }}: {{ $humanReadable ?? __('Never') }}
+                </p>
+            </a>
+        @empty
+        @endforelse
+    </div>
+
+    <x-table class="hidden lg:table">
         <x-slot name="head">
             <x-table.heading class="hidden md:table-cell w-1/12"></x-table.heading>
             <x-table.heading class="w-8/12">{{ __('Question text') }}</x-table.heading>
