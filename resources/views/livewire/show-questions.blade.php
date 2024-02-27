@@ -8,16 +8,16 @@
         @forelse($questions as $q)
             <a href="/questions/{{ $q['id'] }}/votes" class="block max-w-sm p-6 mt-5 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
                 @if($q['is_closed'])
-                    <i class="fa-solid fa-lock text-2xl text-gray-600 dark:text-gray-500"></i>
+                    <x-icons.lock class="text-2xl" title="{{ __('This question is closed') }}" />
+                @endif
+
+                @if($q['belongs_to_quiz'])
+                    <x-icons.trophy class="ml-2 text-2xl" title="{{ __('This question belongs to a quiz') }}" />
                 @endif
                 
                 <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
                     {{ $q['question_text'] }}
                 </h5>
-
-                <p class="font-normal text-gray-700 dark:text-gray-400">
-                    {{ __('Number of votes') }}: {{ $q['number_of_votes'] }}
-                </p>
 
                 <p class="font-normal text-gray-700 dark:text-gray-400">
                     @php
@@ -51,7 +51,10 @@
             >
                 <x-table.cell class="hidden md:table-cell">
                     @if($q['is_closed'])
-                        <i class="fa-solid fa-lock text-gray-600 dark:text-gray-500"></i>
+                        <x-icons.lock title="{{ __('This question is closed') }}" />
+                    @endif
+                    @if($q['belongs_to_quiz'])
+                        <x-icons.trophy class="ml-2" title="{{ __('This question belongs to a quiz') }}" />
                     @endif
                 </x-table.cell>
                 <x-table.cell>
