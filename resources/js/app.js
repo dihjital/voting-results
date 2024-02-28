@@ -1,5 +1,7 @@
 import './bootstrap';
 
+// import { firebaseConfig, vapidKey } from './config';
+
 import Chart from 'chart.js/auto';
 window.Chart = Chart;
 

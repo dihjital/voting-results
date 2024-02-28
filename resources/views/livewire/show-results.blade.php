@@ -508,7 +508,7 @@
     </x-dialog-modal>
 
     @push('scripts')
-        <script>
+        <script>            
             // Your web app's Firebase configuration
             const firebaseConfig = {
                 apiKey: "AIzaSyCuXCsziu1yv8qMD0RcDPTM38jsz9dbc7Q",
@@ -667,43 +667,54 @@
                 });
             }
 
-            function deleteToken() {
-                // Delete registration token.
+            function deleteToken() 
+            {
+                console.log('Deleting token from server ... ');
+                const data = {
+                    user: '{{ Auth::id() }}',
+                };
+                        
+                fetch("{{ config('services.api.endpoint') }}/unsubscribe", {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                }).then(response => {
+                    if (response.ok) {
+                        console.log("Token successfully deleted from server");
+                        setTokenSentToServer(false);
+                    } else {
+                        if (response.status === 404) {
+                            console.error("Token does not exists on server");
+                            setTokenSentToServer(false);
+                        } else {
+                            console.error("Token deletion failed from server");
+                        }
+                    }
+                }).catch(error => {
+                    console.error("Error: ", error);
+                });
+                
+                console.log('Deleting token from FCM ... ');
                 messaging.getToken().then((currentToken) => {
                     messaging.deleteToken(currentToken).then(() => {
-                        console.log('Deleting token from server...');
-                        const data = {
-                            user: '{{ Auth::id() }}',
-                        };
-                        
-                        fetch("{{ config('services.api.endpoint') }}/unsubscribe", {
-                            method: "DELETE",
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify(data)
-                        }).then(response => {
-                            if (response.ok) {
-                                console.log("token successfully deleted");
-                                setTokenSentToServer(false);
-                            } else {
-                                console.error("token deletion failed");
-                            }
-                        }).catch(error => {
-                            console.error("Error: ", error);
-                        });
+                        if (currentToken) {
+                            console.log('Token deleted successfully from FCM');
+                        } else {
+                            console.error('Failed to delete token from FCM');
+                        }
 
                         // console.log('Token deleted.');
                         // setTokenSentToServer(false);
                         // Once token is deleted update UI.
-                        // resetUI();
-                        
+                        // resetUI(); 
                     }).catch((err) => {
-                        console.log('Unable to delete token. ', err);
+                        console.log('Unable to delete token from FCM', err);
                     });
                 }).catch((err) => {
-                    console.log('Error retrieving registration token. ', err);
-                    showToken('Error retrieving registration token. ', err);
+                    console.log('Error retrieving registration token from FCM', err);
+                    showToken('Error retrieving registration token from FCM', err);
                 });
             }
 
