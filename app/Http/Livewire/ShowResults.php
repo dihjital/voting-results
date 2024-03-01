@@ -221,6 +221,7 @@ class ShowResults extends Component
             Auth::user(),
             $attachment,
             $this->votes,
+            $this->locations,
             (object) [
                 'id' => $this->question_id,
                 'text' => $this->question_text,

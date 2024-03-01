@@ -29,6 +29,7 @@ class EmailVotingResults extends Mailable implements ShouldQueue
         public User $user,
         public VotesExport $votesExport,
         public $voteResults,
+        public $voteLocations,
         public $question,
     )
     { }
@@ -76,6 +77,7 @@ class EmailVotingResults extends Mailable implements ShouldQueue
                 'questionId' => $this->question->id,
                 'questionText' => $this->question->text,
                 'voteResults' => $this->voteResults,
+                'voteLocations' => $this->voteLocations,
                 'resultsUrl' => env('APP_URL').'/questions/'.$this->question->id.'/votes',
             ],
         );
