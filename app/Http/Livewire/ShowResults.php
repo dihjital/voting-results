@@ -46,10 +46,20 @@ class ShowResults extends Component
     public $showTable = false;
     public $showMap = false;
 
-    protected $listeners = [
+    /* protected $listeners = [
         'refresh-chart' => 'refreshChart',
         'refresh-page'  => '$refresh',
-    ];
+        'echo:user,VoteReceived' => 'refreshChart',
+    ]; */
+
+    public function getListeners()
+    {
+        return [
+            'refresh-chart' => 'refreshChart',
+            'refresh-page'  => '$refresh',
+            'echo:user.' . Auth::user()->id . ',VoteReceived' => 'refreshChart',
+        ];
+    }
 
     public function mount($question_id)
     {
