@@ -57,7 +57,7 @@ class ShowResults extends Component
         return [
             'refresh-chart' => 'refreshChart',
             'refresh-page'  => '$refresh',
-            'echo:user.' . Auth::user()->id . ',Event: App\Events\VoteReceived' => 'refreshChart',
+            'echo:user.' . Auth::user()->id . ',VoteReceived' => 'refreshChart',
         ];
     }
 
