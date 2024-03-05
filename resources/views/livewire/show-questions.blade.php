@@ -3,7 +3,11 @@
     @if($this->hasErrorMessage())
         <x-error-page code="{{ $this->getStatusCode() }}" message="{{ $this->getErrorMessage() }}"></x-error-page>
     @else
-    <!--  Cards Section Only visible on small screens -->
+    <!-- Filters section -->
+    <x-toggle checked wire:model="filter.quizzes">{{ __('Show quizzes') }}</x-toggle>
+    <x-toggle checked wire:model="filter.closed">{{ __('Show closed') }}</x-toggle>
+
+    <!-- Cards Section Only visible on small screens -->
     <div class="lg:hidden mt-5 md:mt-5">
         @forelse($questions as $q)
             <a href="/questions/{{ $q['id'] }}/votes" class="block max-w-sm p-6 mt-5 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">

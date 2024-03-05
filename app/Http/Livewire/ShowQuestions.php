@@ -22,6 +22,11 @@ class ShowQuestions extends Component
 
     const PAGINATING = TRUE;
 
+    public $filter = [
+        'closed' => true,
+        'quizzes' => true,
+    ];
+
     public function mount()
     {
         try {
@@ -55,6 +60,8 @@ class ShowQuestions extends Component
                 }) 
                 ->get($url, array_filter([
                         'page' => self::getPAGINATING() ? $page ?? request('page', 1) : '',
+                        'closed' => $this->filter['closed'] ?? null,
+                        'quizzes' => $this->filter['quizzes'] ?? null,
                     ])
                 )
                 ->throwUnlessStatus(200);
