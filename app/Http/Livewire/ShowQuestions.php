@@ -22,13 +22,28 @@ class ShowQuestions extends Component
 
     const PAGINATING = TRUE;
 
-    public $filter = [
+    public $filters = [
         'closed' => true,
         'quizzes' => true,
     ];
 
+    protected function initializeFiltering()
+    {
+        $filters = session()->get('showQuestions.filters', $this->filters);
+        foreach($filters as $key => $value) {
+            $this->filters[$key] = $value;
+        }
+    }
+
+    public function updatedFilters($value, $key)
+    {
+        session()->put('showQuestions.filters', $this->filters);
+    }
+
     public function mount()
     {
+        $this->initializeFiltering();
+
         try {
             list(
                 'access_token' => $this->access_token, 
@@ -60,8 +75,8 @@ class ShowQuestions extends Component
                 }) 
                 ->get($url, array_filter([
                         'page' => self::getPAGINATING() ? $page ?? request('page', 1) : '',
-                        'closed' => $this->filter['closed'] ?? null,
-                        'quizzes' => $this->filter['quizzes'] ?? null,
+                        'closed' => $this->filters['closed'] ?? null,
+                        'quizzes' => $this->filters['quizzes'] ?? null,
                     ])
                 )
                 ->throwUnlessStatus(200);

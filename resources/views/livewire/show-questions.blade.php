@@ -4,19 +4,19 @@
         <x-error-page code="{{ $this->getStatusCode() }}" message="{{ $this->getErrorMessage() }}"></x-error-page>
     @else
     <!-- Filters section -->
-    <x-toggle checked wire:model="filter.quizzes">{{ __('Show quizzes') }}</x-toggle>
-    <x-toggle checked wire:model="filter.closed">{{ __('Show closed') }}</x-toggle>
+    <x-toggle checked wire:model="filters.quizzes">{{ __('Show quizzes') }}</x-toggle>
+    <x-toggle checked wire:model="filters.closed">{{ __('Show closed') }}</x-toggle>
 
     <!-- Cards Section Only visible on small screens -->
     <div class="lg:hidden mt-5 md:mt-5">
         @forelse($questions as $q)
             <a href="/questions/{{ $q['id'] }}/votes" class="block max-w-sm p-6 mt-5 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
                 @if($q['is_closed'])
-                    <x-icons.lock class="text-2xl" title="{{ __('This question is closed') }}" />
+                    <x-icons.lock class="text-2xl mr-2" title="{{ __('This question is closed') }}" />
                 @endif
 
                 @if($q['belongs_to_quiz'])
-                    <x-icons.trophy class="ml-2 text-2xl" title="{{ __('This question belongs to a quiz') }}" />
+                    <x-icons.trophy class="text-2xl" title="{{ __('This question belongs to a quiz') }}" />
                 @endif
                 
                 <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
@@ -55,10 +55,10 @@
             >
                 <x-table.cell class="hidden md:table-cell">
                     @if($q['is_closed'])
-                        <x-icons.lock title="{{ __('This question is closed') }}" />
+                        <x-icons.lock class="mr-2" title="{{ __('This question is closed') }}" />
                     @endif
                     @if($q['belongs_to_quiz'])
-                        <x-icons.trophy class="ml-2" title="{{ __('This question belongs to a quiz') }}" />
+                        <x-icons.trophy title="{{ __('This question belongs to a quiz') }}" />
                     @endif
                 </x-table.cell>
                 <x-table.cell>
