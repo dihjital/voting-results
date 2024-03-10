@@ -11,6 +11,8 @@
         votes: @entangle('votes'),
         locations: @entangle('locations'),
 
+        showSubscriptionModal: @entangle('showSubscriptionModal'),
+        showUnsubscriptionModal: @entangle('showUnsubscriptionModal'),
         showLocationDetailsModal: false,
 
         showTable: @entangle('showTable'),
@@ -207,6 +209,21 @@
                 this.showTable = this.showTable || value;
             });
 
+            confirmSubscription = () => {
+                requestPermission();
+                console.log('Closing Subscription modal.');
+                this.showSubscriptionModal = ! this.showSubscriptionModal;
+                setTimeout(() => Livewire.emit('refresh-page'), 3000);              
+            };
+
+            getSubscriptionStatus = () => {
+                return isTokenSentToServer() ? '{{ __('Subscribed') }}' : '{{ __('Subscribe') }}';
+            };
+
+            isSubscribed = () => {
+                return isTokenSentToServer();
+            }
+
             // Listeners
             document.getElementById('theme-toggle').addEventListener('click', () => {
                 changeChartColorScheme();
@@ -220,6 +237,17 @@
 
                 // Refresh map
                 this.locations.length > 0 && refreshMap();
+            });
+
+            Livewire.on('request-permission', () => {
+                confirmSubscription();
+            });
+
+            Livewire.on('unsubscribe', () => {
+                deleteToken();
+                console.log('Closing Unsubscription modal.');
+                this.showUnsubscriptionModal = ! this.showUnsubscriptionModal;
+                setTimeout(() => Livewire.emit('refresh-page'), 3000);              
             });
         }
 
@@ -241,6 +269,22 @@
             </h3>
         </div>
     
+        <!-- Button Section -->
+        <div class="hidden lg:flex items-center">
+            <x-button x-show="!isSubscribed()" wire:click="$toggle('showSubscriptionModal')">
+                <span>{{ __('Subscribe') }}</span>
+            </x-button>
+            <x-action-message class="ml-3" on="subscribed">
+                {{ __('Subscribed.') }}
+            </x-action-message>
+            <x-button x-show="isSubscribed()" wire:click="$toggle('showUnsubscriptionModal')">
+                <span>{{ __('Unsubscribe') }}</span>
+            </x-button>
+            <x-action-message class="ml-3" on="unsubscribed">
+                {{ __('Unsubscribed.') }}
+            </x-action-message>
+        </div>
+
         <!-- Toast for QR code -->
         <div 
             x-data="{ isRight: true }"
@@ -419,4 +463,277 @@
         </x-slot>
     </x-dialog-modal>
 
+    <!-- Subscription Modal -->
+    <x-dialog-modal wire:model="showSubscriptionModal">
+        <x-slot name="title">
+            {{ __('Subscribe for push notifications') }}
+        </x-slot>
+
+        <x-slot name="content">
+            <p>{{ __('By pressing the Subscribe button you consent to receive push notification when a change happens in the current voting.') }}</p>
+            <p class="mt-1">{{ __('Are you sure you would like to subscribe for push notifications?') }}</p>
+        </x-slot>
+
+        <x-slot name="footer">
+            <x-secondary-button wire:click="$toggle('showSubscriptionModal')" wire:loading.attr="disabled">
+                {{ __('Cancel') }}
+            </x-secondary-button>
+
+            <x-danger-button class="ml-3" wire:click="requestPermission" wire:loading.attr="disabled">
+                {{ __('Subscribe') }}
+            </x-danger-button>
+        </x-slot>
+    </x-dialog-modal>
+
+    <!-- Unsubscribe Modal -->
+    <x-dialog-modal wire:model="showUnsubscriptionModal">
+        <x-slot name="title">
+            {{ __('Unsubscribe from push notifications') }}
+        </x-slot>
+
+        <x-slot name="content">
+            <p>{{ __('By clicking the Unsubscribe button, you will stop receiving push notifications when the voting is modified.') }}</p>
+            <p class="mt-1">{{ __('Are you sure you would like to unsubscribe?') }}</p>
+        </x-slot>
+
+        <x-slot name="footer">
+            <x-secondary-button wire:click="$toggle('showUnsubscriptionModal')" wire:loading.attr="disabled">
+                {{ __('Cancel') }}
+            </x-secondary-button>
+
+            <x-danger-button class="ml-3" wire:click="unsubscribe" wire:loading.attr="disabled">
+                {{ __('Unsubscribe') }}
+            </x-danger-button>
+        </x-slot>
+    </x-dialog-modal>
+
+    @push('scripts')
+        <script>            
+            // Your web app's Firebase configuration
+            const firebaseConfig = {
+                apiKey: "AIzaSyCuXCsziu1yv8qMD0RcDPTM38jsz9dbc7Q",
+                authDomain: "voting-client-ebb49.firebaseapp.com",
+                projectId: "voting-client-ebb49",
+                storageBucket: "voting-client-ebb49.appspot.com",
+                messagingSenderId: "224379351613",
+                appId: "1:224379351613:web:8401ff3d87b74588b97054",
+                measurementId: "G-6WRGCD987R"
+            };
+
+            // Initialize Firebase
+            firebase.initializeApp(firebaseConfig);
+
+            const messaging = firebase.messaging();
+
+            messaging.onMessage((payload) => {
+                console.log('Message received. ', payload);
+                Livewire.emit('refresh-chart');
+                appendMessage(payload);
+            });
+
+            function resetUI() {
+                clearMessages();
+                messaging.getToken({vapidKey: 'BOvLS0bWuSqLtLIJAomSMlGqjpm3IEWwTk568_QrAcJcAJRsRcpcSuRkIiEfpSqRRtl_4TwZvhQD8qosrOnyZic'}).then((currentToken) => {
+                    if (currentToken) {
+                        console.log(currentToken);
+                        sendTokenToServer(currentToken);
+                        updateUIForPushEnabled(currentToken);
+                    } else {
+                        // Show permission request.
+                        console.log('No registration token available. Request permission to generate one.');
+                        // Show permission UI.
+                        updateUIForPushPermissionRequired();
+                        setTokenSentToServer(false);
+                    }
+                }).catch((err) => {
+                    console.log('An error occurred while retrieving token. ', err);
+                    showToken('Error retrieving registration token. ', err);
+                    setTokenSentToServer(false);
+                });
+            }
+
+            function showToken(currentToken) {
+                //
+            }
+
+            function sendTokenToServer(currentToken) {
+                // TODO: Check token validity on server .... unless it never expires
+                if (!isTokenSentToServer()) {
+                    console.log('Sending token to server...');
+                    const data = {
+                        user: '{{ Auth::id() }}',
+                        token: currentToken,
+                    };
+
+                    fetch("{{ config('services.api.endpoint') }}/subscribe", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(data)
+                    }).then(response => {
+                        if (response.ok) {
+                            console.log("token successfully registered");
+                            setTokenSentToServer(true);
+                        } else {
+                            console.error("token registration failed");
+                        }
+                    }).catch(error => { 
+                        console.error("Error: ", error);
+                    });
+                } else {
+                    console.log('Token already sent to server so won\'t send it again ' +
+                        'unless it changes');
+                }
+            }
+
+            function isTokenSentToServer() {
+                return getWithExpiry('{{ md5(Auth::id()) }}') === '1';
+            }
+
+            function getItemFromLocalStorage(itemName) {
+                return window.localStorage.getItem(itemName) || null;
+            }
+
+            function setItemInLocalStorage(itemName, item) {
+                window.localStorage.setItem(itemName, JSON.stringify(item));
+            }
+
+            function setWithExpiry(key, value, ttl) {                
+                let sentToServer = JSON.parse(getItemFromLocalStorage('sentToServer'));
+
+                const now = new Date();
+                
+                const item = {
+                    value: value,
+                    expiry: now.getTime() + ttl,
+                };
+
+                if (!sentToServer) {
+                    sentToServer = {};
+                }
+                sentToServer[key] = item;
+
+                setItemInLocalStorage('sentToServer', sentToServer);
+            }
+
+            function getWithExpiry(key) {
+                let sentToServer = JSON.parse(getItemFromLocalStorage('sentToServer'));
+
+                // if the item doesn't exist, return null
+                if (!sentToServer) {
+                    return null;
+                }
+
+                const now = new Date();
+
+                if (!(key in sentToServer)) {
+                    return null;
+                }
+
+                // Compare the expiry time of the item with the current time
+                if (now.getTime() > sentToServer[key].expiry) {
+                    delete sentToServer.key;
+                    setItemInLocalStorage('sentToServer', sentToServer);
+                    deleteToken();
+                    return null;
+                }
+
+                return sentToServer[key].value;
+            }
+
+            function setTokenSentToServer(sent) {
+                const oneWeek = 3600000 * 24 * 7;
+
+                setWithExpiry('{{ md5(Auth::id()) }}', sent ? '1' : '0', oneWeek);
+            }
+
+            function showHideDiv(divId, show) {
+                //
+            }
+
+            function requestPermission() {
+                console.log('Requesting permission...');
+                Notification.requestPermission().then((permission) => {
+                    if (permission === 'granted') {
+                        console.log('Notification permission granted.');
+                        // TODO(developer): Retrieve a registration token for use with FCM.
+                        // In many cases once an app has been granted notification permission,
+                        // it should update its UI reflecting this.
+                        resetUI();
+                    } else {
+                        console.log('Unable to get permission to notify.');
+                    }
+                });
+            }
+
+            function deleteToken() 
+            {
+                console.log('Deleting token from server ... ');
+                const data = {
+                    user: '{{ Auth::id() }}',
+                };
+                        
+                fetch("{{ config('services.api.endpoint') }}/unsubscribe", {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(data)
+                }).then(response => {
+                    if (response.ok) {
+                        console.log("Token successfully deleted from server");
+                        setTokenSentToServer(false);
+                    } else {
+                        if (response.status === 404) {
+                            console.error("Token does not exists on server");
+                            setTokenSentToServer(false);
+                        } else {
+                            console.error("Token deletion failed from server");
+                        }
+                    }
+                }).catch(error => {
+                    console.error("Error: ", error);
+                });
+                
+                console.log('Deleting token from FCM ... ');
+                messaging.getToken().then((currentToken) => {
+                    messaging.deleteToken(currentToken).then(() => {
+                        if (currentToken) {
+                            console.log('Token deleted successfully from FCM');
+                        } else {
+                            console.error('Failed to delete token from FCM');
+                        }
+
+                        // console.log('Token deleted.');
+                        // setTokenSentToServer(false);
+                        // Once token is deleted update UI.
+                        // resetUI(); 
+                    }).catch((err) => {
+                        console.log('Unable to delete token from FCM', err);
+                    });
+                }).catch((err) => {
+                    console.log('Error retrieving registration token from FCM', err);
+                    showToken('Error retrieving registration token from FCM', err);
+                });
+            }
+
+            function appendMessage(payload) {
+                //
+            }
+
+            function clearMessages() {
+                //
+            }
+
+            function updateUIForPushEnabled(currentToken) {
+                //
+            }
+
+            function updateUIForPushPermissionRequired() {
+                //
+            }
+
+        </script>
+    @endpush
 </div>
