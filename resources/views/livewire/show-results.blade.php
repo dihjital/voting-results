@@ -335,28 +335,34 @@
         <div class="lg:hidden mt-5 md:mt-5">
             <template x-for="vote in votes" :key="vote.id">
                 <a href="#" class="block max-w-sm p-6 mt-5 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
-                    <div class="w-full flex justify-center mb-2 overflow-hidden border-2 border-gray-200 rounded-lg dark:border-gray-700 hover:bg-gray-50"
-                            x-show="vote.image_path">
-                            <img class="
-                                    w-full h-full 
-                                    object-scale-down 
-                                    transition duration-300 ease-in-out 
-                                    hover:scale-125" 
-                                :src="vote.image_url" alt="Thumbnail" />
+                    <div class="w-full h-full relative">
+                        <div class="p-2">
+                            <div class="w-full flex justify-center mb-2 overflow-hidden border-2 border-gray-200 rounded-lg dark:border-gray-700 hover:bg-gray-50"
+                                    x-show="vote.image_path">
+                                    <img class="
+                                            w-full h-full 
+                                            object-scale-down 
+                                            transition duration-300 ease-in-out 
+                                            hover:scale-125" 
+                                        :src="vote.image_url" alt="Thumbnail" />
+                            </div>
+
+                            <i 
+                                class="fa-solid fa-champagne-glasses text-2xl text-gray-400 dark:text-gray-200" 
+                                x-show="vote.number_of_votes != 0 && highestVote == vote.number_of_votes">
+                            </i>
+
+                            <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
+                                x-text="vote.vote_text + ': ' + vote.number_of_votes">
+                            </h5>
+
+                            {{-- <p class="font-normal text-gray-700 dark:text-gray-400"
+                                x-text="'{{ __('Number of votes') }}' + ': ' + vote.number_of_votes">
+                            </p> --}}
+                        </div>
+                        <!-- Background color to indicate vote -->
+                        <div class="absolute top-0 left-0 bottom-0 bg-gray-400 rounded-lg opacity-25" x-bind:style="{ width: ((vote.number_of_votes / voteResults.reduce((a, b) => a + b)) * 100) + '%' }"></div>
                     </div>
-
-                    <i 
-                        class="fa-solid fa-champagne-glasses text-2xl text-gray-400 dark:text-gray-200" 
-                        x-show="vote.number_of_votes != 0 && highestVote == vote.number_of_votes">
-                    </i>
-
-                    <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
-                        x-text="vote.vote_text">
-                    </h5>
-
-                    <p class="font-normal text-gray-700 dark:text-gray-400"
-                        x-text="'{{ __('Number of votes') }}' + ': ' + vote.number_of_votes">
-                    </p>
                 </a>
             </template>
         </div>
