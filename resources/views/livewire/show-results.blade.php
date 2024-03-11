@@ -335,6 +335,11 @@
         <div class="lg:hidden mt-5 md:mt-5">
             <template x-for="vote in votes" :key="vote.id">
                 <a href="#" class="block max-w-sm p-6 mt-5 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+                    <i 
+                        class="fa-solid fa-champagne-glasses mb-2 text-2xl text-gray-400 dark:text-gray-200" 
+                        x-show="vote.number_of_votes != 0 && highestVote == vote.number_of_votes">
+                    </i>
+
                     <div class="w-full h-full relative">
                         <div class="p-2">
                             <div class="w-full flex justify-center mb-2 overflow-hidden border-2 border-gray-200 rounded-lg dark:border-gray-700 hover:bg-gray-50"
@@ -347,12 +352,7 @@
                                         :src="vote.image_url" alt="Thumbnail" />
                             </div>
 
-                            <i 
-                                class="fa-solid fa-champagne-glasses text-2xl text-gray-400 dark:text-gray-200" 
-                                x-show="vote.number_of_votes != 0 && highestVote == vote.number_of_votes">
-                            </i>
-
-                            <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
+                            <h5 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
                                 x-text="vote.vote_text + ': ' + vote.number_of_votes">
                             </h5>
 
