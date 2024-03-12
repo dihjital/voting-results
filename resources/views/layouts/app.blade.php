@@ -30,10 +30,6 @@
             }
         </script>
 
-        <!-- The core Firebase JS SDK is always required and must be listed first //-->
-        <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-compat.js"></script>
-        
         <!-- Styles -->
         @livewireStyles
     </head>
