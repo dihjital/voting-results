@@ -340,20 +340,22 @@
                         x-show="vote.number_of_votes != 0 && highestVote == vote.number_of_votes">
                     </i>
 
+                    <div 
+                        class="w-full flex justify-center mb-2 overflow-hidden border-2 border-gray-200 rounded-lg dark:border-gray-700 hover:bg-gray-50"
+                        x-show="vote.image_path">
+                        <img 
+                            class="w-full h-full 
+                                    object-scale-down 
+                                    transition duration-300 ease-in-out 
+                                    hover:scale-125" 
+                            :src="vote.image_url" 
+                            alt="Thumbnail" />
+                    </div>
+
                     <div class="w-full h-full relative">
                         <div class="p-2">
-                            <div class="w-full flex justify-center mb-2 overflow-hidden border-2 border-gray-200 rounded-lg dark:border-gray-700 hover:bg-gray-50"
-                                    x-show="vote.image_path">
-                                    <img class="
-                                            w-full h-full 
-                                            object-scale-down 
-                                            transition duration-300 ease-in-out 
-                                            hover:scale-125" 
-                                        :src="vote.image_url" alt="Thumbnail" />
-                            </div>
-
                             <h5 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
-                                x-text="vote.vote_text + ': ' + vote.number_of_votes">
+                                x-text="vote.vote_text + ' - ' + vote.number_of_votes">
                             </h5>
 
                             {{-- <p class="font-normal text-gray-700 dark:text-gray-400"
