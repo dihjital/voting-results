@@ -33,6 +33,12 @@
                     {{ __('Last voted at') }}: {{ $humanReadable ?? __('Never') }}
                 </p>
 
+                @if($q['belongs_to_quiz'])
+                    <p class="italic text-xs text-gray-700 dark:text-gray-400">
+                        {{ __('This question belongs to ":quizName" quiz', ['quizName' => implode(', ', $this->getQuizName($this->quizzes, $q['id']))]) }}
+                    </p>
+                @endif
+
                 @if($q['closed_at'])
                     <p class="italic text-xs text-gray-700 dark:text-gray-400">
                     @if($q['is_closed'] && $q['closed_at'] < now())
@@ -81,15 +87,22 @@
                     <a href="/questions/{{ $q['id'] }}/votes">
                         {{ $q['question_text'] }}
                     </a>
-                    @if($q['closed_at'])
-                        <p class="italic text-xs">
-                        @if($q['is_closed'] && $q['closed_at'] < now())
-                            {{ __('This question was automatically closed at: :closeAt', ['closeAt' => Carbon\Carbon::parse($q['closed_at'])->format('m/d/Y')]) }}
-                        @else
-                            {{ __('This question was set to automatically close at: :closeAt', ['closeAt' => Carbon\Carbon::parse($q['closed_at'])->format('m/d/Y')]) }}
+                    <div class="space-y-2">
+                        @if($q['belongs_to_quiz'])
+                            <p class="italic text-xs text-gray-700 dark:text-gray-400">
+                                {{ __('This question belongs to ":quizName" quiz', ['quizName' => implode(', ', $this->getQuizName($this->quizzes, $q['id']))]) }}
+                            </p>
                         @endif
-                        </p>
-                    @endif
+                        @if($q['closed_at'])
+                            <p class="italic text-xs">
+                            @if($q['is_closed'] && $q['closed_at'] < now())
+                                {{ __('This question was automatically closed at: :closeAt', ['closeAt' => Carbon\Carbon::parse($q['closed_at'])->format('m/d/Y')]) }}
+                            @else
+                                {{ __('This question was set to automatically close at: :closeAt', ['closeAt' => Carbon\Carbon::parse($q['closed_at'])->format('m/d/Y')]) }}
+                            @endif
+                            </p>
+                        @endif
+                    </div>
                 </x-table.cell>
                 <x-table.cell class="hidden lg:table-cell">{{ $q['number_of_votes'] }}</x-table.cell>
                 <x-table.cell class="hidden lg:table-cell text-sm font-medium space-x-2">
