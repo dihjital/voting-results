@@ -34,23 +34,12 @@ class ShowResults extends Component
     public $vote_texts;
     public $vote_results;
     public $highestVote = 0;
-
     public $locations;
-
     public $qrCodeImg;
-
-    public $showSubscriptionModal = false;
-    public $showUnsubscriptionModal = false;
     public $showLocationDetailsModal = false;
 
     public $showTable = false;
     public $showMap = false;
-
-    /* protected $listeners = [
-        'refresh-chart' => 'refreshChart',
-        'refresh-page'  => '$refresh',
-        'echo:user,VoteReceived' => 'refreshChart',
-    ]; */
 
     public function getListeners()
     {
@@ -111,18 +100,6 @@ class ShowResults extends Component
     public function updatedshowMap()
     {
         session()->put($this->question_id.':showMap', $this->showMap);
-    }
-
-    public function requestPermission()
-    {
-        $this->emit('request-permission');
-        $this->emit('subscribed'); // Show action message
-    }
-
-    public function unsubscribe()
-    {
-        $this->emit('unsubscribe');
-        $this->emit('unsubscribed'); // Show action message        
     }
 
     public function refreshChart()
