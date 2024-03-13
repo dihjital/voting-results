@@ -71,7 +71,6 @@ class ShowQuestions extends Component
         $seconds = 3600; // 1 hour...
  
         return Cache::remember($key, $seconds, function () {
-            Log::info('Fetching quizzes from the back-end');
             try {
                 $url = config('services.api.endpoint',
                     fn() => throw new \Exception('No API endpoint is defined')
@@ -94,13 +93,26 @@ class ShowQuestions extends Component
         });   
     }
 
-    public function getQuizName($quizzes, $question_id)
+    public function getQuizName($quizzes, $question_id): ?array
     {
-        return array_map(fn($quiz) => $quiz['name'], array_filter($quizzes, function($quiz) use ($question_id) {
-            return count(array_filter($quiz['questions'], function($question) use ($question_id) {
-                return $question['id'] === $question_id;
-            }));
-        }));
+        return 
+            array_map(
+                fn($quiz) => $quiz['name'], 
+                array_filter(
+                    $quizzes, 
+                    function($quiz) use ($question_id) {
+                        return 
+                            count(
+                                array_filter(
+                                    $quiz['questions'], 
+                                    function($question) use ($question_id) {
+                                        return $question['id'] === $question_id;
+                                    }
+                                )
+                            );
+                    }
+                )
+            );
     }
 
     public function fetchData($page = null)
