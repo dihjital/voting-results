@@ -71,12 +71,14 @@
                 ])
             >
                 <x-table.cell class="hidden md:table-cell">
-                    @if($q['is_closed'])
-                        <x-icons.lock class="mr-2" title="{{ __('This question is closed') }}" />
-                    @endif
-                    @if($q['belongs_to_quiz'])
-                        <x-icons.trophy title="{{ __('This question belongs to a quiz') }}" />
-                    @endif
+                    <div class="space-x-2">
+                        @if($q['is_closed'])
+                            <x-icons.lock title="{{ __('This question is closed') }}" />
+                        @endif
+                        @if($q['belongs_to_quiz'])
+                            <x-icons.trophy title="{{ __('This question belongs to a quiz') }}" />
+                        @endif
+                    </div>
                 </x-table.cell>
                 <x-table.cell>
                     @if($q['is_closed'])

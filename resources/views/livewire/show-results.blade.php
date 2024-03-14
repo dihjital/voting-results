@@ -357,10 +357,6 @@
                             <h5 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
                                 x-text="vote.vote_text + ' - ' + vote.number_of_votes">
                             </h5>
-
-                            {{-- <p class="font-normal text-gray-700 dark:text-gray-400"
-                                x-text="'{{ __('Number of votes') }}' + ': ' + vote.number_of_votes">
-                            </p> --}}
                         </div>
                         <!-- Background color to indicate vote -->
                         <div class="absolute top-0 left-0 bottom-0 bg-gray-400 rounded-lg opacity-25" x-bind:style="{ width: ((vote.number_of_votes / voteResults.reduce((a, b) => a + b)) * 100) + '%' }"></div>
