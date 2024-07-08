@@ -56,7 +56,7 @@
     <!-- Table Section Only visible on large screens -->
     <x-table class="hidden lg:table">
         <x-slot name="head">
-            <x-table.heading class="hidden md:table-cell w-1/12"></x-table.heading>
+            <x-table.heading class="hidden md:table-cell w-auto"></x-table.heading>
             <x-table.heading class="w-8/12">{{ __('Question text') }}</x-table.heading>
             <x-table.heading class="hidden lg:table-cell w-auto">{{ __('# of choices') }}</x-table.heading>
             <x-table.heading class="hidden lg:table-cell w-auto">{{ __('Last voting') }}</x-table.heading>
