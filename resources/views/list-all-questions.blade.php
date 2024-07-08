@@ -12,7 +12,7 @@
             </div>
 
             <!-- This is a legend for all the icons we use for questions in the list page //-->
-            <div class="flex flex-wrap space-x-6 text-sm ml-2 mt-4 text-gray-500 dark:text-gray-400">
+            <div class="hidden lg:flex flex-wrap space-x-6 text-sm ml-2 mt-4 text-gray-500 dark:text-gray-400">
                 <div class="flex items-center space-x-2">
                     <i class="fa-solid fa-trophy" title="{{ __('The question belongs to a quiz') }}"></i>
                     <span>{{ __('The question belongs to a quiz') }}</span>

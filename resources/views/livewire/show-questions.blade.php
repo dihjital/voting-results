@@ -16,7 +16,11 @@
                 @endif
 
                 @if($q['belongs_to_quiz'])
-                    <x-icons.trophy class="text-2xl" title="{{ __('This question belongs to a quiz') }}" />
+                    <x-icons.trophy class="text-2xl mr-2" title="{{ __('This question belongs to a quiz') }}" />
+                @endif
+
+                @if($q['is_secure'])
+                    <x-icons.secure class="text-2xl" title="{{ __('A valid e-mail is required to vote for this question') }}" />
                 @endif
                 
                 <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
