@@ -58,7 +58,7 @@
         <x-slot name="head">
             <x-table.heading class="hidden md:table-cell w-1/12"></x-table.heading>
             <x-table.heading class="w-8/12">{{ __('Question text') }}</x-table.heading>
-            <x-table.heading class="hidden lg:table-cell w-auto">{{ __('# of answers') }}</x-table.heading>
+            <x-table.heading class="hidden lg:table-cell w-auto">{{ __('# of choices') }}</x-table.heading>
             <x-table.heading class="hidden lg:table-cell w-auto">{{ __('Last voting') }}</x-table.heading>
         </x-slot>
         <x-slot name="body">
@@ -77,6 +77,9 @@
                         @endif
                         @if($q['belongs_to_quiz'])
                             <x-icons.trophy title="{{ __('This question belongs to a quiz') }}" />
+                        @endif
+                        @if($q['is_secure'])
+                            <x-icons.secure title="{{ __('A valid e-mail is required to vote for this question') }}" />
                         @endif
                     </div>
                 </x-table.cell>
