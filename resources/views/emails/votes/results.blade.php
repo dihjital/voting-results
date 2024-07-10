@@ -2,7 +2,7 @@
 
 # {{ __('You have been receiving the voting results for _":questionText"_ question!', ['questionText' => $questionText]) }}
 
-<img src="https://quickchart.io/chart/render/zm-710fe8ea-3310-45af-807e-e10634eb78b7?title=
+<img src="https://quickchart.io/chart/render/zm-ac035d4b-9b47-4b23-a90e-1a8d0f8e4c4c?title=
     {{ urlencode($questionText) }}
     &labels={{ 
         implode(',', 
