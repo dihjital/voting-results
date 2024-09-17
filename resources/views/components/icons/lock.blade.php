@@ -8,5 +8,5 @@
             'class' => "fa-solid fa-lock text-gray-600 dark:text-gray-500 " . $class,
         ]) 
     }}
-    title="{{ $title }}">
+    title="{{ $title ?: __('This question is closed') }}">
 </i>

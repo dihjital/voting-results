@@ -12,15 +12,19 @@
         @forelse($questions as $q)
             <a href="/questions/{{ $q['id'] }}/votes" class="block max-w-sm p-6 mt-5 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
                 @if($q['is_closed'])
-                    <x-icons.lock class="text-2xl mr-2" title="{{ __('This question is closed') }}" />
+                    <x-icons.lock class="text-2xl mr-2" />
                 @endif
 
                 @if($q['belongs_to_quiz'])
-                    <x-icons.trophy class="text-2xl mr-2" title="{{ __('This question belongs to a quiz') }}" />
+                    <x-icons.trophy class="text-2xl mr-2" />
                 @endif
 
                 @if($q['is_secure'])
-                    <x-icons.secure class="text-2xl" title="{{ __('A valid e-mail is required to vote for this question') }}" />
+                    <x-icons.secure class="text-2xl" />
+                @endif
+
+                @if(! $q['show_current_votes'])
+                    <x-icons.show-votes class="text-2xl" />
                 @endif
                 
                 <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
@@ -77,13 +81,16 @@
                 <x-table.cell class="hidden md:table-cell">
                     <div class="space-x-2">
                         @if($q['is_closed'])
-                            <x-icons.lock title="{{ __('This question is closed') }}" />
+                            <x-icons.lock />
                         @endif
                         @if($q['belongs_to_quiz'])
-                            <x-icons.trophy title="{{ __('This question belongs to a quiz') }}" />
+                            <x-icons.trophy />
                         @endif
                         @if($q['is_secure'])
-                            <x-icons.secure title="{{ __('A valid e-mail is required to vote for this question') }}" />
+                            <x-icons.secure />
+                        @endif
+                        @if(! $q['show_current_votes'])
+                            <x-icons.show-votes />
                         @endif
                     </div>
                 </x-table.cell>

@@ -14,16 +14,20 @@
             <!-- This is a legend for all the icons we use for questions in the list page //-->
             <div class="hidden lg:flex flex-wrap space-x-6 text-sm ml-2 mt-4 text-gray-500 dark:text-gray-400">
                 <div class="flex items-center space-x-2">
-                    <i class="fa-solid fa-trophy" title="{{ __('The question belongs to a quiz') }}"></i>
+                    <x-icons.lock />
                     <span>{{ __('The question belongs to a quiz') }}</span>
                 </div>
                 <div class="flex items-center space-x-2">
-                    <i class="fa-solid fa-lock" title="{{ __('The question is closed') }}"></i>
+                    <x-icons.trophy />
                     <span>{{ __('The question is closed') }}</span>
                 </div>
                 <div class="flex items-center space-x-2">
-                    <i class="fa-solid fa-user-secret" title="{{ __('A valid e-mail is required to vote for this question') }}"></i>
+                    <x-icons.secure />
                     <span>{{ __('A valid e-mail address is required to vote') }}</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <x-icons.show-votes />
+                    <span>{{ __('Current votes will NOT be shown during voting') }}</span>
                 </div>
             </div>
         </div>
