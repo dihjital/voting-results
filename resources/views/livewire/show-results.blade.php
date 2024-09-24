@@ -316,7 +316,7 @@
                                             title="{{ __('This answer received the most votes') }}">
                                         </i>
                                         <i 
-                                            class="fa-solid fa-check text-sm text-gray-400 dark:text-gray-200 mr-2" 
+                                            class="fa-solid fa-check text-sm text-gray-400 dark:text-gray-200 ml-2" 
                                             x-show="vote.id === question.correct_vote"
                                             title="{{ __('This is the correct vote') }}">
                                         </i>
