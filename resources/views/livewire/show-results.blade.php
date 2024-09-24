@@ -8,6 +8,7 @@
         highestVote: @entangle('highestVote'),
         questionText: @entangle('question_text'),
 
+        question: @entangle('question'),
         votes: @entangle('votes'),
         locations: @entangle('locations'),
 
@@ -311,7 +312,13 @@
                                         <span class="text-xs mr-2" x-text="vote.number_of_votes"></span>
                                         <i 
                                             class="fa-solid fa-champagne-glasses text-sm text-gray-400 dark:text-gray-200" 
-                                            x-show="vote.number_of_votes != 0 && highestVote == vote.number_of_votes">
+                                            x-show="vote.number_of_votes != 0 && highestVote == vote.number_of_votes"
+                                            title="{{ __('This answer received the most votes') }}">
+                                        </i>
+                                        <i 
+                                            class="fa-solid fa-check text-sm text-gray-400 dark:text-gray-200 mr-2" 
+                                            x-show="vote.id === question.correct_vote"
+                                            title="{{ __('This is the correct vote') }}">
                                         </i>
                                     </x-table.cell>
                                 </x-table.row>
@@ -335,10 +342,19 @@
         <div class="lg:hidden mt-5 md:mt-5">
             <template x-for="vote in votes" :key="vote.id">
                 <a href="#" class="block max-w-sm p-6 mt-5 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
-                    <i 
-                        class="fa-solid fa-champagne-glasses mb-2 text-2xl text-gray-400 dark:text-gray-200" 
-                        x-show="vote.number_of_votes != 0 && highestVote == vote.number_of_votes">
-                    </i>
+                    <div class="flex space-x-2 mb-2">
+                        <i 
+                            class="fa-solid fa-champagne-glasses text-2xl text-gray-400 dark:text-gray-200" 
+                            x-show="vote.number_of_votes != 0 && highestVote == vote.number_of_votes"
+                            title="{{ __('This answer received the most votes') }}">
+                        </i>
+
+                        <i 
+                            class="fa-solid fa-check text-2xl text-gray-400 dark:text-gray-200" 
+                            x-show="vote.id === question.correct_vote"
+                            title="{{ __('This is the correct vote') }}">
+                        </i>
+                    </div>
 
                     <div 
                         class="w-full flex justify-center mb-2 overflow-hidden border-2 border-gray-200 rounded-lg dark:border-gray-700 hover:bg-gray-50"
