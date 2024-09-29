@@ -112,22 +112,43 @@
                 const x = chart.config.options.scales.x;
                 const y = chart.config.options.scales.y;
 
+                const darkDefaultBackgroundColor = 'rgba(253, 230, 138, 0.5)';
+                const darkSelectedBackgroundColor = 'rgba(253, 230, 138, 1)';
+                const lightDefaultBackgroundColor = 'rgba(173, 216, 230, 0.5)';
+                const lightSelectedBackgroundColor = 'rgba(173, 216, 230, 1)';
+
                 const colorTheme = localStorage.getItem('color-theme')
                     ? localStorage.getItem('color-theme')
                     : 'dark'; 
 
                 if (colorTheme === 'dark') {
                     Chart.defaults.color = 'white';
-                    chart.config.data.datasets[0].backgroundColor = '#FDE68A'; // yellow-200
+                    chart.config.data.datasets[0].backgroundColor = darkSelectedBackgroundColor;
                     x.ticks.color = y.ticks.color = 'lightgray';
                     x.border.color = y.border.color = 'white';
                 } else {
                     Chart.defaults.color = 'black';
-                    chart.config.data.datasets[0].backgroundColor = 'lightblue';
+                    chart.config.data.datasets[0].backgroundColor = lightSelectedBackgroundColor;
                     x.ticks.color = y.ticks.color = 'gray';
                     x.border.color = y.border.color = 'gray';
                 }
-                
+
+                // If the question has a correct vote set then we highlight it
+                if (this.question.correct_vote) {
+                    chart.config.data.datasets[0].backgroundColor = [];
+
+                    this.voteResults.forEach((result, index) => {
+                        chart.config.data.datasets[0].backgroundColor[index] =
+                            colorTheme === 'dark'
+                                ? this.votes[index].id === this.question.correct_vote
+                                    ? darkSelectedBackgroundColor
+                                    : darkDefaultBackgroundColor
+                                : this.votes[index].id === this.question.correct_vote
+                                    ? lightSelectedBackgroundColor
+                                    : lightDefaultBackgroundColor;
+                    });
+                }
+
                 chart.update();
             };
     
@@ -139,6 +160,7 @@
                     datasets: [{
                         label: '# of Votes',
                         data: this.voteResults,
+                        backgroundColor: [],
                         borderWidth: 0,
                         barThickness: 30,
                     }]
