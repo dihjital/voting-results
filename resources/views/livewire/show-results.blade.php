@@ -121,32 +121,28 @@
                     ? localStorage.getItem('color-theme')
                     : 'dark'; 
 
-                chart.config.data.datasets[0].backgroundColor = this.voteResults.map(() => darkSelectedBackgroundColor);
+                const correctVoteIndex = this.voteResults.findIndex((result, index) => this.votes[index].id === this.question.correct_vote);
 
                 if (colorTheme === 'dark') {
-                    if (this.question.correct_vote) {
-                        this.voteResults.forEach((result, index) => {
-                            chart.config.data.datasets[0].backgroundColor[index] = this.votes[index].id === this.question.correct_vote
-                                ? darkSelectedBackgroundColor
-                                : darkDefaultBackgroundColor;
-                        });
-                    } else {
-                        chart.config.data.datasets[0].backgroundColor = this.voteResults.map(() => darkSelectedBackgroundColor);
-                    }
+                    chart.config.data.datasets[0].backgroundColor = this.voteResults.map((result, index) => {
+                        return correctVoteIndex !== -1
+                            ? index === correctVoteIndex
+                                ? darkSelectedBackgroundColor 
+                                : darkDefaultBackgroundColor
+                            : darkSelectedBackgroundColor;
+                    });
 
                     Chart.defaults.color = 'white';
                     x.ticks.color = y.ticks.color = 'lightgray';
                     x.border.color = y.border.color = 'white';
                 } else {
-                    if (this.question.correct_vote) {
-                        this.voteResults.forEach((result, index) => {
-                            chart.config.data.datasets[0].backgroundColor[index] = this.votes[index].id === this.question.correct_vote
-                                ? lightSelectedBackgroundColor
-                                : lightDefaultBackgroundColor;
-                        });
-                    } else {
-                        chart.config.data.datasets[0].backgroundColor = this.voteResults.map(() => lightSelectedBackgroundColor);
-                    }
+                    chart.config.data.datasets[0].backgroundColor = this.voteResults.map((result, index) => {
+                        return correctVoteIndex !== -1
+                            ? index === correctVoteIndex
+                                ? lightSelectedBackgroundColor 
+                                : lightDefaultBackgroundColor
+                            : lightSelectedBackgroundColor;
+                    });
 
                     Chart.defaults.color = 'black';
                     x.ticks.color = y.ticks.color = 'gray';
