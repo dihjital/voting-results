@@ -121,32 +121,36 @@
                     ? localStorage.getItem('color-theme')
                     : 'dark'; 
 
+                chart.config.data.datasets[0].backgroundColor = this.voteResults.map(() => darkSelectedBackgroundColor);
+
                 if (colorTheme === 'dark') {
+                    if (this.question.correct_vote) {
+                        this.voteResults.forEach((result, index) => {
+                            chart.config.data.datasets[0].backgroundColor[index] = this.votes[index].id === this.question.correct_vote
+                                ? darkSelectedBackgroundColor
+                                : darkDefaultBackgroundColor;
+                        });
+                    } else {
+                        chart.config.data.datasets[0].backgroundColor = this.voteResults.map(() => darkSelectedBackgroundColor);
+                    }
+
                     Chart.defaults.color = 'white';
-                    chart.config.data.datasets[0].backgroundColor = darkSelectedBackgroundColor;
                     x.ticks.color = y.ticks.color = 'lightgray';
                     x.border.color = y.border.color = 'white';
                 } else {
+                    if (this.question.correct_vote) {
+                        this.voteResults.forEach((result, index) => {
+                            chart.config.data.datasets[0].backgroundColor[index] = this.votes[index].id === this.question.correct_vote
+                                ? lightSelectedBackgroundColor
+                                : lightDefaultBackgroundColor;
+                        });
+                    } else {
+                        chart.config.data.datasets[0].backgroundColor = this.voteResults.map(() => lightSelectedBackgroundColor);
+                    }
+
                     Chart.defaults.color = 'black';
-                    chart.config.data.datasets[0].backgroundColor = lightSelectedBackgroundColor;
                     x.ticks.color = y.ticks.color = 'gray';
                     x.border.color = y.border.color = 'gray';
-                }
-
-                // If the question has a correct vote set then we highlight it
-                if (this.question.correct_vote) {
-                    chart.config.data.datasets[0].backgroundColor = [];
-
-                    this.voteResults.forEach((result, index) => {
-                        chart.config.data.datasets[0].backgroundColor[index] =
-                            colorTheme === 'dark'
-                                ? this.votes[index].id === this.question.correct_vote
-                                    ? darkSelectedBackgroundColor
-                                    : darkDefaultBackgroundColor
-                                : this.votes[index].id === this.question.correct_vote
-                                    ? lightSelectedBackgroundColor
-                                    : lightDefaultBackgroundColor;
-                    });
                 }
 
                 chart.update();
@@ -239,7 +243,9 @@
                 chart.data.labels = this.voteTexts;
                 chart.data.datasets[0].data = this.voteResults;
                 chart.options.plugins.title.text = `${this.questionText}` + ' (' + this.voteResults.reduce((a, b) => a + b) + ')';
-                chart.update();
+
+                // Change chart colors and update chart
+                changeChartColorScheme();
 
                 // Refresh map
                 this.locations.length > 0 && refreshMap();

@@ -186,11 +186,13 @@ class ShowResults extends Component
     public function caruselPrev()
     {
         $this->mount($this->question['previous_id'] ?? $this->question_id);
+        $this->emit('chart-refreshed');
     }
 
     public function caruselNext()
     {
         $this->mount($this->question['next_id'] ?? $this->question_id);
+        $this->emit('chart-refreshed');
     }
 
     public function exportVotes()
