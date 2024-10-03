@@ -64,10 +64,11 @@
     <!-- Table Section Only visible on large screens -->
     <x-table class="hidden lg:table">
         <x-slot name="head">
-            <x-table.heading class="hidden md:table-cell w-auto"></x-table.heading>
-            <x-table.heading class="w-8/12">{{ __('Question text') }}</x-table.heading>
-            <x-table.heading class="hidden lg:table-cell w-auto">{{ __('# of choices') }}</x-table.heading>
-            <x-table.heading class="hidden lg:table-cell w-auto">{{ __('Last voting') }}</x-table.heading>
+            <x-table.heading class="w-auto hidden md:table-cell w-auto"></x-table.heading>
+            <x-table.heading class="w-6/12">{{ __('Question text') }}</x-table.heading>
+            <x-table.heading class="w-2/12 hidden lg:table-cell w-auto">{{ __('# of choices') }}</x-table.heading>
+            <x-table.heading class="w-2/12 hidden lg:table-cell w-auto">{{ __('# of votes') }}</x-table.heading>
+            <x-table.heading class="w-2/12 hidden lg:table-cell w-auto">{{ __('Last voting') }}</x-table.heading>
         </x-slot>
         <x-slot name="body">
             @forelse($questions as $q)
@@ -121,6 +122,7 @@
                     </div>
                 </x-table.cell>
                 <x-table.cell class="hidden lg:table-cell">{{ $q['number_of_votes'] }}</x-table.cell>
+                <x-table.cell class="hidden lg:table-cell">{{ $q['number_of_votes_received'] }}</x-table.cell>
                 <x-table.cell class="hidden lg:table-cell text-sm font-medium space-x-2">
                     @php
                         $carbonDate = $q['last_vote_at']
@@ -133,7 +135,7 @@
             </x-table.row>
             @empty
             <x-table.row wire:key="row-empty">
-                <x-table.cell colspan="4" class="whitespace-nowrap">
+                <x-table.cell colspan="5" class="whitespace-nowrap">
                     <div class="flex justify-center items-center">
                         <span class="py-8 text-base text-center font-medium text-gray-400 uppercase">{{ __('There are no questions in the database') }} ...</span>
                     </div>
