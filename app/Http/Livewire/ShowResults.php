@@ -197,14 +197,14 @@ class ShowResults extends Component
 
     public function exportVotes()
     {
-        $export = new VotesExport($this->votes);
+        $export = new VotesExport($this->votes, $this->question);
     
         return Excel::download($export, 'votes.xlsx');
     }
 
     public function mailVotes()
     {
-        $attachment = new VotesExport($this->votes);
+        $attachment = new VotesExport($this->votes, $this->question);
     
         Mail::to(Auth::user()->email)->send(new EmailVotingResults(
             Auth::user(),
@@ -214,6 +214,7 @@ class ShowResults extends Component
             (object) [
                 'id' => $this->question_id,
                 'text' => $this->question_text,
+                'correct_vote' => $this->question['correct_vote'],
             ],
         ));
 
