@@ -34,6 +34,8 @@
 @endforeach
 @endcomponent
 
+@if($voteLocations)
+
 @component('mail::panel')
 {{ __('The following table includes the number of votes received by location based on your voters geographical data.') }}
 @endcomponent
@@ -45,6 +47,8 @@
 | {{ $location['country_name'] }} | {{ $location['city'] }} | {{ $location['vote_count'] }} | <a href="https://www.google.com/maps/search/?api=1&query={{ $location['latitude'] }},{{ $location['longitude'] }}" target="_blank" rel="noopener noreferrer"><img src="{{ $message->embed(asset('storage/' . 'images/pin.jpeg')) }}" width="32" height="32" alt="{{ __('Display on Google Maps') }}" /></a> |
 @endforeach
 @endcomponent
+
+@endif
 
 {{ __('If you would like to check out the voting results on the Web site please click on the button below:') }}
 
