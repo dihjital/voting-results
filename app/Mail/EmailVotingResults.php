@@ -40,7 +40,7 @@ class EmailVotingResults extends Mailable implements ShouldQueue
     public function envelope(): Envelope
     {
         return new Envelope(
-            from: new Address('voting-results@votes365.org', 'Voting Results'),
+            from: new Address('no-reply@votes365.org', 'votes365.org'),
             subject: 'Download Voting Results',
             tags: ['voting-results'],
             metadata: [
