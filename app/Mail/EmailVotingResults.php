@@ -87,13 +87,13 @@ class EmailVotingResults extends Mailable implements ShouldQueue
 
     protected function getChartData(): array
     {
-        return collect($this->question->votes)->map(fn($vote) => $vote->number_of_votes)->toArray();
+        return collect($this->question->votes)->map(fn($vote) => $vote['number_of_votes'])->toArray();
     }
 
     protected function getChartDataBackgroundColor(): array
     {
         return collect($this->question->votes)->map(
-            fn($vote) => $this->question->correct_vote === $vote->id
+            fn($vote) => $this->question->correct_vote === $vote['id']
                 ? 'red'
                 : 'lightblue'
         )->toArray();
@@ -114,17 +114,14 @@ class EmailVotingResults extends Mailable implements ShouldQueue
                     'backgroundColor' => $this->getChartDataBackgroundColor(),
                 ])
                 ->throwUnlessStatus(200);
+
+                $response->json('statusCode') >= 400 &&
+                    throw new Exception($response->json('body'), $response->json('statusCode'));
+
+                return $response->json('body');
         } catch (Exception $e) {
             Log::error('getChartUrl: ' . $e->getMessage());
-        }
-
-        ! $response->successful() && 
-            throw new Exception($response->body(), $response->status());
-
-        $response->json('statusCode') >= 400 &&
-            throw new Exception($response->json('body'), $response->json('statusCode'));
-
-        return $response->json('body');        
+        }     
     }
 
     /**
