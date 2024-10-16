@@ -6,7 +6,7 @@
     $letters = range('A', 'Z');
 @endphp
 
-<img src="{{ $chartUrl }}" />
+<img src="{{ $chartUrl }}" alt="Voting results for - {{ $questionText }}" style="display: block; margin: 0 auto;" />
 
 @component('mail::panel')
 {{ __('Please find each choice with the corresponding number of votes received in the table below.') }} 

@@ -118,11 +118,11 @@ class EmailVotingResults extends Mailable implements ShouldQueue
                 $response->json('statusCode') >= 400 &&
                     throw new Exception($response->json('body'), $response->json('statusCode'));
 
-                Log::debug(message: implode(', ', array: $this->getChartLabels()));
-                Log::debug(message: implode(', ', array: $this->getChartData()));
-                Log::debug(message: implode(', ', array: $this->getChartDataBackgroundColor()));
+                // Log::debug(message: implode(', ', array: $this->getChartLabels()));
+                // Log::debug(message: implode(', ', array: $this->getChartData()));
+                // Log::debug(message: implode(', ', array: $this->getChartDataBackgroundColor()));
 
-                Log::debug($response->json('body'));
+                // Log::debug($response->json('body'));
 
                 return $response->json('body');
         } catch (Exception $e) {
