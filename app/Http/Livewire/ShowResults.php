@@ -215,6 +215,7 @@ class ShowResults extends Component
                 'id' => $this->question_id,
                 'text' => $this->question_text,
                 'correct_vote' => $this->question['correct_vote'],
+                'votes' => $this->question['votes'],
             ],
         ));
 

@@ -6,20 +6,7 @@
     $letters = range('A', 'Z');
 @endphp
 
-<img src="https://quickchart.io/chart/render/zm-ac035d4b-9b47-4b23-a90e-1a8d0f8e4c4c?title=
-    {{ urlencode($questionText) }}
-    &labels={{ 
-        implode(',', 
-            array_map(
-                function($r, $index) use ($letters) { 
-                    return $letters[$index] . ')';
-                },
-                $voteResults, array_keys($voteResults)
-            )
-        )
-    }}
-    &data1={{ implode(',', array_map(fn($r) => $r['number_of_votes'], $voteResults)) }}"
-/>
+<img src="{{ $chartUrl }}" />
 
 @component('mail::panel')
 {{ __('Please find each choice with the corresponding number of votes received in the table below.') }} 

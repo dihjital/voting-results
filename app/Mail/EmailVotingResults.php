@@ -2,6 +2,8 @@
 
 namespace App\Mail;
 
+use App\Models\User;
+
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -12,15 +14,24 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Attachment;
 
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Http;
+
 use App\Exports\VotesExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\Excel as BaseExcel;
 
-use App\Models\User;
+use Exception;
 
 class EmailVotingResults extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
+
+    protected $letters;
+    protected array $serverlessFunction = [
+        'Url',
+        'Auth'
+    ];
 
     /**
      * Create a new message instance.
@@ -32,7 +43,11 @@ class EmailVotingResults extends Mailable implements ShouldQueue
         public $voteLocations,
         public $question,
     )
-    { }
+    { 
+        $this->letters = range('A', 'Z');
+        $this->serverlessFunction['Url'] = config('services.digital-ocean.serverless-functions.quickchart.url');
+        $this->serverlessFunction['Auth'] = config('services.digital-ocean.serverless-functions.quickchart.auth');
+    }
 
     /**
      * Get the message envelope.
@@ -65,6 +80,53 @@ class EmailVotingResults extends Mailable implements ShouldQueue
         ];
     }
 
+    protected function getChartLabels(): array
+    {
+        return collect($this->question->votes)->map(fn($vote, $index) => $this->letters[$index] . ') ')->toArray();
+    }
+
+    protected function getChartData(): array
+    {
+        return collect($this->question->votes)->map(fn($vote) => $vote->number_of_votes)->toArray();
+    }
+
+    protected function getChartDataBackgroundColor(): array
+    {
+        return collect($this->question->votes)->map(
+            fn($vote) => $this->question->correct_vote === $vote->id
+                ? 'red'
+                : 'lightblue'
+        )->toArray();
+    }
+
+    protected function getChartUrl(): ?string
+    {
+        try {
+            $response = 
+                Http::withHeaders([
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/json',
+                    'Authorization' => $this->serverlessFunction['Auth'],
+                ])
+                ->post($this->serverlessFunction['Url'], [
+                    'labels' => $this->getChartLabels(),
+                    'data' => $this->getChartData(),
+                    'backgroundColor' => $this->getChartDataBackgroundColor(),
+                ])
+                ->throwUnlessStatus(200);
+        } catch (Exception $e) {
+            Log::error('getChartUrl: ' . $e->getMessage());
+        }
+
+        ! $response->successful() && 
+            throw new Exception($response->body(), $response->status());
+
+        $response->json('statusCode') >= 400 &&
+            throw new Exception($response->json('body'), $response->json('statusCode'));
+
+        return $response->json('body');        
+    }
+
     /**
      * Get the message content definition.
      */
@@ -78,6 +140,7 @@ class EmailVotingResults extends Mailable implements ShouldQueue
                 'questionText' => $this->question->text,
                 'voteResults' => $this->voteResults,
                 'voteLocations' => $this->voteLocations,
+                'chartUrl' => $this->getChartUrl(),
                 'resultsUrl' => env('APP_URL').'/questions/'.$this->question->id.'/votes',
             ],
         );
