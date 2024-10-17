@@ -31,7 +31,7 @@
 | Country   | City | # of votes | Location |
 | :-------- | :--- | :--------: | :------: |
 @foreach($voteLocations as $location)
-| {{ $location['country_name'] }} | {{ $location['city'] }} | {{ $location['vote_count'] }} | <a href="https://www.google.com/maps/search/?api=1&query={{ $location['latitude'] }},{{ $location['longitude'] }}" target="_blank" rel="noopener noreferrer"><img src="{{ $message->embed(asset('storage/' . 'images/pin.jpeg')) }}" width="32" height="32" alt="{{ __('Display on Google Maps') }}" /></a> |
+| {{ $location['country_name'] }} | <a href="https://www.google.com/maps/search/?api=1&query={{ $location['latitude'] }},{{ $location['longitude'] }}" target="_blank" rel="noopener noreferrer">{{ $location['city'] }}</a> | {{ $location['vote_count'] }} | <img src="{{ $message->embed(asset('storage/' . 'images/pin.jpeg')) }}" width="32" height="32" alt="{{ __('Display on Google Maps') }}" /> |
 @endforeach
 @endcomponent
 
