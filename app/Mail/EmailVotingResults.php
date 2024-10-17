@@ -94,8 +94,8 @@ class EmailVotingResults extends Mailable implements ShouldQueue
     {
         return collect($this->question->votes)->map(
             fn($vote) => $this->question->correct_vote === $vote['id']
-                ? 'red'
-                : 'lightblue'
+                ? 'rgb(104, 117, 246)'
+                : 'rgb(0, 146, 255)'
         )->toArray();
     }
 
@@ -117,12 +117,6 @@ class EmailVotingResults extends Mailable implements ShouldQueue
 
                 $response->json('statusCode') >= 400 &&
                     throw new Exception($response->json('body'), $response->json('statusCode'));
-
-                // Log::debug(message: implode(', ', array: $this->getChartLabels()));
-                // Log::debug(message: implode(', ', array: $this->getChartData()));
-                // Log::debug(message: implode(', ', array: $this->getChartDataBackgroundColor()));
-
-                // Log::debug($response->json('body'));
 
                 return $response->json('body');
         } catch (Exception $e) {
