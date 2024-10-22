@@ -30,7 +30,12 @@ class EmailVotingResults extends Mailable implements ShouldQueue
     protected $letters;
     protected array $serverlessFunction = [
         'Url',
-        'Auth'
+        'Auth',
+    ];
+
+    protected array $staticMap = [
+        'Url',
+        'Key',
     ];
 
     /**
@@ -47,6 +52,9 @@ class EmailVotingResults extends Mailable implements ShouldQueue
         $this->letters = range('A', 'Z');
         $this->serverlessFunction['Url'] = config('services.digital-ocean.serverless-functions.quickchart.url');
         $this->serverlessFunction['Auth'] = config('services.digital-ocean.serverless-functions.quickchart.auth');
+
+        $this->staticMap['Url'] = config('services.google.static-map.url');
+        $this->staticMap['Key'] = config('services.google.static-map.api-key');
     }
 
     /**
@@ -121,7 +129,23 @@ class EmailVotingResults extends Mailable implements ShouldQueue
                 return $response->json('body');
         } catch (Exception $e) {
             Log::error('getChartUrl: ' . $e->getMessage());
-        }     
+        }
+        
+        return null;
+    }
+
+    protected function getStaticMapUrl($lat, $long)
+    {
+        return 
+            $this->staticMap['Url'] . '?' . 
+            http_build_query([
+                'center' => "$lat,$long",
+                'zoom' => 10,
+                'size' => '200x100',
+                'key' => $this->staticMap['Key'],
+                'scale' => 1,
+                'maptype' => 'hybrid',
+            ]);
     }
 
     /**
@@ -139,8 +163,8 @@ class EmailVotingResults extends Mailable implements ShouldQueue
                 'voteLocations' => $this->voteLocations,
                 'chartUrl' => $this->getChartUrl(),
                 'resultsUrl' => env('APP_URL').'/questions/'.$this->question->id.'/votes',
+                'mapUrl' => fn($lat, $long) => $this->getStaticMapUrl($lat, $long),
             ],
         );
     }
-
 }

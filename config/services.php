@@ -46,6 +46,13 @@ return [
         ],
     ],
 
+    'google' => [
+        'static-map' => [
+            'url' => 'https://maps.googleapis.com/maps/api/staticmap',
+            'api-key' => env('GOOGLE_MAP_KEY', ''),
+        ],
+    ],
+
     'ses' => [
         'key' => env('AWS_ACCESS_KEY_ID'),
         'secret' => env('AWS_SECRET_ACCESS_KEY'),
