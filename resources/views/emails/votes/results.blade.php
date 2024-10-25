@@ -35,7 +35,7 @@
 @endforeach
 @endcomponent
 
-<img src="{{ $mapUrl }}" style="border-radius: 0.375rem;" />
+<img src="{{ $mapUrl }}" style="border-radius: 0.375rem; margin-bottom: 5%;" />
 
 @endif
 

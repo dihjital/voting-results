@@ -64,7 +64,7 @@ class EmailVotingResults extends Mailable implements ShouldQueue
     {
         return new Envelope(
             from: new Address('no-reply@votes365.org', 'votes365.org'),
-            subject: 'Voting Results for ' . $this->question->text,
+            subject: "Voting Results for '{$this->question->text}'",
             tags: ['voting-results'],
             metadata: [
                 'question_id' => $this->question->id,
