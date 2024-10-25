@@ -28,12 +28,14 @@
 @endcomponent
 
 @component('mail::table')
-| Country   | City | # of votes | Location |
-| :-------- | :--- | :--------: | :------: |
+| Country   | City | # of votes |
+| :-------- | :--- | :--------: |
 @foreach($voteLocations as $location)
-| {{ $location['country_name'] }} | <a href="https://www.google.com/maps/{{ "@" . $location['latitude'] }},{{ $location['longitude'] }},12z" target="_blank" rel="noopener noreferrer">{{ $location['city'] }}</a> | {{ $location['vote_count'] }} | <img src="{{ $mapUrl($location['latitude'], $location['longitude']) }}" style="border-radius: 0.375rem;" alt="{{ __('Display on Google Maps') }}" /> |
+| {{ $location['country_name'] }} | <a href="https://www.google.com/maps/{{ "@" . $location['latitude'] }},{{ $location['longitude'] }},12z" target="_blank" rel="noopener noreferrer">{{ $location['city'] }}</a> | {{ $location['vote_count'] }} |
 @endforeach
 @endcomponent
+
+<img src="{{ $mapUrl }}" style="border-radius: 0.375rem;" />
 
 @endif
 

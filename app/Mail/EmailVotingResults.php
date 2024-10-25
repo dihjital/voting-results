@@ -134,7 +134,7 @@ class EmailVotingResults extends Mailable implements ShouldQueue
         return null;
     }
 
-    protected function getStaticMapUrl($lat, $long)
+    protected function _getStaticMapUrl($lat, $long)
     {
         return 
             $this->staticMap['Url'] . '?' . 
@@ -144,6 +144,20 @@ class EmailVotingResults extends Mailable implements ShouldQueue
                 'size' => '200x100',
                 'key' => $this->staticMap['Key'],
                 'scale' => 1,
+                'maptype' => 'hybrid',
+            ]);
+    }
+
+    protected function getStaticMapUrl(): string
+    {
+        return
+            $this->staticMap['Url'] . '?' . 
+            http_build_query([
+                'size' => '300x200',
+                'zoom' => 'auto',
+                'markers' => implode('|', array_map(fn($location) => 
+                    "{$location['latitude']},{$location['longitude']}", $this->voteLocations)),
+                'key' => $this->staticMap['Key'],
                 'maptype' => 'hybrid',
             ]);
     }
@@ -163,7 +177,8 @@ class EmailVotingResults extends Mailable implements ShouldQueue
                 'voteLocations' => $this->voteLocations,
                 'chartUrl' => $this->getChartUrl(),
                 'resultsUrl' => env('APP_URL').'/questions/'.$this->question->id.'/votes',
-                'mapUrl' => fn($lat, $long) => $this->getStaticMapUrl($lat, $long),
+                // 'mapUrl' => fn($lat, $long) => $this->getStaticMapUrl($lat, $long),
+                'mapUrl' => $this->getStaticMapUrl(),
             ],
         );
     }
