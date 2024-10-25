@@ -39,11 +39,16 @@
 
 @endif
 
+@component('mail::text')
 {{ __('If you would like to check out the voting results on the Web site please click on the button below:') }}
+@endcomponent
 
 @component('mail::button', ['url' => $resultsUrl])
 {{ __('Check out the results') }}
 @endcomponent
 
-<font size="2">{{ __('This email was intended for :userName', ['userName' => $userName]) }}. {{ __('You are receiving emails from the ') }} **{{ config('app.name') }}** {{ __(' application.') }}</font>
+@component('mail::subcopy')
+{{ __('This email was intended for :userName', ['userName' => $userName]) }}. {{ __('You are receiving emails from the ') }} **{{ config('app.name') }}** {{ __(' application.') }}
+@endcomponent
+
 @endcomponent

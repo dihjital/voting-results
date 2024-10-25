@@ -64,7 +64,7 @@ class EmailVotingResults extends Mailable implements ShouldQueue
     {
         return new Envelope(
             from: new Address('no-reply@votes365.org', 'votes365.org'),
-            subject: 'Download Voting Results',
+            subject: 'Voting Results for ' . $this->question->text,
             tags: ['voting-results'],
             metadata: [
                 'question_id' => $this->question->id,
@@ -134,20 +134,6 @@ class EmailVotingResults extends Mailable implements ShouldQueue
         return null;
     }
 
-    protected function _getStaticMapUrl($lat, $long)
-    {
-        return 
-            $this->staticMap['Url'] . '?' . 
-            http_build_query([
-                'center' => "$lat,$long",
-                'zoom' => 10,
-                'size' => '200x100',
-                'key' => $this->staticMap['Key'],
-                'scale' => 1,
-                'maptype' => 'hybrid',
-            ]);
-    }
-
     protected function getStaticMapUrl(): string
     {
         return
@@ -177,7 +163,6 @@ class EmailVotingResults extends Mailable implements ShouldQueue
                 'voteLocations' => $this->voteLocations,
                 'chartUrl' => $this->getChartUrl(),
                 'resultsUrl' => env('APP_URL').'/questions/'.$this->question->id.'/votes',
-                // 'mapUrl' => fn($lat, $long) => $this->getStaticMapUrl($lat, $long),
                 'mapUrl' => $this->getStaticMapUrl(),
             ],
         );
