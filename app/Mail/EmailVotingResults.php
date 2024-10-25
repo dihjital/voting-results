@@ -141,7 +141,7 @@ class EmailVotingResults extends Mailable implements ShouldQueue
             http_build_query([
                 'size' => '320x200',
                 'zoom' => 'auto',
-                'markers' => implode('|', array_map(fn($location) => 
+                'markers' => implode('&markers=', array_map(fn($location) => 
                     "label:{$location['city'][0]}|{$location['latitude']},{$location['longitude']}", $this->voteLocations)),
                 'key' => $this->staticMap['Key'],
                 'maptype' => 'hybrid',
