@@ -39,9 +39,7 @@
 
 @endif
 
-@component('mail::text')
 {{ __('If you would like to check out the voting results on the Web site please click on the button below:') }}
-@endcomponent
 
 @component('mail::button', ['url' => $resultsUrl])
 {{ __('Check out the results') }}

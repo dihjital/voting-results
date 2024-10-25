@@ -139,7 +139,7 @@ class EmailVotingResults extends Mailable implements ShouldQueue
         return
             $this->staticMap['Url'] . '?' . 
             http_build_query([
-                'size' => '300x200',
+                'size' => '320x200',
                 'zoom' => 'auto',
                 'markers' => implode('|', array_map(fn($location) => 
                     "{$location['latitude']},{$location['longitude']}", $this->voteLocations)),
@@ -162,7 +162,7 @@ class EmailVotingResults extends Mailable implements ShouldQueue
                 'voteResults' => $this->voteResults,
                 'voteLocations' => $this->voteLocations,
                 'chartUrl' => $this->getChartUrl(),
-                'resultsUrl' => env('APP_URL').'/questions/'.$this->question->id.'/votes',
+                'resultsUrl' => env('APP_URL') . "/questions/{$this->question->id}/votes",
                 'mapUrl' => $this->getStaticMapUrl(),
             ],
         );
