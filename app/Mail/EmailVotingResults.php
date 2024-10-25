@@ -136,16 +136,23 @@ class EmailVotingResults extends Mailable implements ShouldQueue
 
     protected function getStaticMapUrl(): string
     {
-        return
-            $this->staticMap['Url'] . '?' . 
-            http_build_query([
-                'size' => '320x200',
-                'zoom' => 'auto',
-                'markers' => implode('&markers=', array_map(fn($location) => 
-                    "label:{$location['city'][0]}|{$location['latitude']},{$location['longitude']}", $this->voteLocations)),
-                'key' => $this->staticMap['Key'],
-                'maptype' => 'hybrid',
-            ]);
+        $query = http_build_query([
+            'size' => '320x200',
+            'zoom' => 'auto',
+            'key' => $this->staticMap['Key'],
+            'maptype' => 'hybrid',
+        ]);
+
+        $markers = implode('&markers=', 
+            array_map(
+                fn($location) => 
+                    "label:{$location['city'][0]}|{$location['latitude']},{$location['longitude']}", 
+                $this->voteLocations
+            )
+        );
+
+        return 
+           "{$this->staticMap['Url']}?{$query}&markers={$markers}";
     }
 
     /**
