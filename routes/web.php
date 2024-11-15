@@ -14,9 +14,6 @@ use Illuminate\Support\Facades\Auth;
 |
 */
 
-Route::get('/register', fn() => abort(404));
-Route::post('/register', fn() => abort(404));
-
 Route::get('/', function () {
     return redirect()->route('questions');
 });
