@@ -16,10 +16,12 @@ class VotesExport implements FromArray, WithHeadings
 
     public function array(): array
     {
+        $letters = range('A', 'Z');
+
         return array_map(
-            function($vote) {
+            function($vote, $letterIndex) use ($letters) {
                 $base = [
-                    $vote['id'],
+                    $letters[$letterIndex] ?? 'NA',
                     $vote['vote_text'],
                     $vote['number_of_votes'] ?: '0', // No votes received yet
                 ];
@@ -28,7 +30,8 @@ class VotesExport implements FromArray, WithHeadings
                     ? [...$base, $this->question['correct_vote'] === $vote['id'] ?? 1]
                     : $base;
             },
-            $this->votes
+            $this->votes,
+            array_keys($this->votes)
         );        
     }
 

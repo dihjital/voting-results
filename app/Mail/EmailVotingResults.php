@@ -95,7 +95,10 @@ class EmailVotingResults extends Mailable implements ShouldQueue
 
     protected function getChartData(): array
     {
-        return collect($this->question->votes)->map(fn($vote) => $vote['number_of_votes'])->toArray();
+        // Chart is using a logarithmic scale on the Y-axis
+        // We multiply the number_of_votes with a 5 so votes with 1 vote will be shown 'correctly' on the chart
+        // Otherwise they would have a value of 0 (e.g. logn 1 is 0)
+        return collect($this->question->votes)->map(fn($vote) => $vote['number_of_votes'] * 5)->toArray();
     }
 
     protected function getChartDataBackgroundColor(): array
@@ -108,7 +111,7 @@ class EmailVotingResults extends Mailable implements ShouldQueue
     }
 
     protected function getChartUrl(): ?string
-    {
+    {        
         try {
             $response = 
                 Http::withHeaders([
