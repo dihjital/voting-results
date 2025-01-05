@@ -15,11 +15,11 @@
             <div class="hidden lg:flex flex-wrap space-x-6 text-sm ml-2 mt-4 text-gray-500 dark:text-gray-400">
                 <div class="flex items-center space-x-2">
                     <x-icons.lock />
-                    <span>{{ __('The question belongs to a quiz') }}</span>
+                    <span>{{ __('The question is closed') }}</span>
                 </div>
                 <div class="flex items-center space-x-2">
                     <x-icons.trophy />
-                    <span>{{ __('The question is closed') }}</span>
+                    <span>{{ __('The question belongs to a quiz') }}</span>
                 </div>
                 <div class="flex items-center space-x-2">
                     <x-icons.secure />
