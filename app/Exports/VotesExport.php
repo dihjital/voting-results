@@ -21,7 +21,7 @@ class VotesExport implements FromArray, WithHeadings
         return array_map(
             function($vote, $letterIndex) use ($letters) {
                 $base = [
-                    $letters[$letterIndex] ?? 'NA',
+                    $letters[$letterIndex] ?? 'N/A',
                     $vote['vote_text'],
                     $vote['number_of_votes'] ?: '0', // No votes received yet
                 ];

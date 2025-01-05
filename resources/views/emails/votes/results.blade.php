@@ -8,6 +8,8 @@
 
 <img src="{{ $chartUrl }}" alt="Voting results for - {{ $questionText }}" style="display: block; margin: 0 auto;" />
 
+*{{__('The chart is showing results on a logarithmic scale.')}}*
+
 @component('mail::panel')
 {{ __('Please find each choice with the corresponding number of votes received in the table below.') }} 
 {{ __('If the owner of the question sets a correct answer, we will indicate it with a checkmark in the table below.') }}
