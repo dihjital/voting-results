@@ -12,7 +12,7 @@
 
 @component('mail::panel')
 {{ __('Please find each choice with the corresponding number of votes received in the table below.') }} 
-{{ __('If the owner of the question sets a correct answer, we will indicate it with a checkmark in the table below.') }}
+{{ __('If the owner of the question sets a correct answer, we will indicate it with a checkmark.') }}
 @endcomponent
 
 @component('mail::table')
@@ -41,7 +41,8 @@
 
 @endif
 
-{{ __('If you would like to check out the voting results on the Web site please click on the button below:') }}
+{{ __('If you would like to check out the voting results on the Web site please click on the button below.') }}
+{{ __('Please note that you need to have a registered user on our website for this action to work.') }}
 
 @component('mail::button', ['url' => $resultsUrl])
 {{ __('Check out the results') }}
